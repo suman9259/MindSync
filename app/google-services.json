@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "849011301984",
+    "project_id": "mindsync-82aa4",
+    "storage_bucket": "mindsync-82aa4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:849011301984:android:dfc028cd6472a5b029ed05",
+        "android_client_info": {
+          "package_name": "com.example.mindsync"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "849011301984-plrh00escj19tmt5c2chn1jpnhbh84qb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mindsync",
+            "certificate_hash": "2c9342c6f8b474447c066bd7d18a2a9cb10796ca"
+          }
+        },
+        {
+          "client_id": "849011301984-jv4kmmk8uva7q868ge6e953atkhovkhp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOISa1g0yYIZKuUyIQY4_guIV97ug-yHM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "849011301984-jv4kmmk8uva7q868ge6e953atkhovkhp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

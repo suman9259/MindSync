@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">MindSync</string>
+
+    <!-- Authentication Screen -->
+    <string name="welcome_back">Welcome Back</string>
+    <string name="create_account">Create Account</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="action_sign_in">Sign In</string>
+    <string name="action_sign_up">Sign Up</string>
+    <string name="prompt_have_account">Already have an account? %1$s</string>
+    <string name="prompt_no_account">Don\'t have an account? %1$s</string>
+    <string name="or_separator">OR</string>
+    <string name="continue_with_google">Continue with Google</string>
+    <string name="content_description_google_logo">Google</string>
+
+    <!-- Error Messages -->
+    <string name="error_auth_failed">Authentication failed</string>
+    <string name="error_registration_failed">Registration failed</string>
+    <string name="error_google_sign_in_failed">Google sign in failed</string>
+    <string name="error_reset_email_failed">Failed to send reset email</string>
+</resources>
