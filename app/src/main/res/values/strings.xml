@@ -6,17 +6,426 @@
     <string name="create_account">Create Account</string>
     <string name="hint_email">Email</string>
     <string name="hint_password">Password</string>
+    <string name="hint_phone_number">Phone Number</string>
     <string name="action_sign_in">Sign In</string>
     <string name="action_sign_up">Sign Up</string>
+    <string name="action_send_otp">Send OTP</string>
+    <string name="action_verify_otp">Verify OTP</string>
     <string name="prompt_have_account">Already have an account? %1$s</string>
     <string name="prompt_no_account">Don\'t have an account? %1$s</string>
     <string name="or_separator">OR</string>
     <string name="continue_with_google">Continue with Google</string>
     <string name="content_description_google_logo">Google</string>
+    
+    <!-- OTP Screen -->
+    <string name="otp_title">Verification</string>
+    <string name="otp_subtitle">Enter the 6-digit code sent to your phone</string>
+    <string name="otp_resend">Resend OTP</string>
+    <string name="otp_resend_timer">Resend in %1$ds</string>
 
     <!-- Error Messages -->
     <string name="error_auth_failed">Authentication failed</string>
     <string name="error_registration_failed">Registration failed</string>
     <string name="error_google_sign_in_failed">Google sign in failed</string>
     <string name="error_reset_email_failed">Failed to send reset email</string>
+    <string name="error_invalid_phone">Please enter a valid phone number</string>
+    <string name="error_invalid_otp">Please enter a valid 6-digit OTP</string>
+    <string name="error_otp_verification_failed">OTP verification failed</string>
+    
+    <!-- Dashboard Screen -->
+    <string name="welcome_user">Welcome, %1$s!</string>
+    <string name="dashboard_title">Dashboard</string>
+    <string name="your_progress">Your Progress</string>
+    <string name="completed_steps">Completed Steps</string>
+    <string name="completed">Completed</string>
+    <string name="tab_home">Home</string>
+    <string name="tab_shopping">Shopping</string>
+    <string name="tab_health">Health</string>
+    <string name="tab_reminders">Reminders</string>
+    <string name="tab_profile">Profile</string>
+    
+    <!-- Meditation Screen -->
+    <string name="meditation_title">Meditation</string>
+    <string name="find_your_peace">Find Your Peace</string>
+    <string name="take_moment_breathe">Take a moment to breathe and relax</string>
+    <string name="your_meditations">Your Meditations</string>
+    <string name="no_meditations_yet">No meditations yet</string>
+    <string name="start_mindfulness_journey">Start your mindfulness journey by adding your first meditation</string>
+    <string name="add_meditation">Add Meditation</string>
+    <string name="meditation_sessions">Sessions</string>
+    <string name="meditation_minutes">Minutes</string>
+    <string name="meditation_streak">Streak</string>
+    <string name="days">days</string>
+    <string name="minutes_short">min</string>
+    <string name="set_reminder">Set Reminder</string>
+    <string name="breathe_deeply">Breathe deeply…</string>
+    <string name="ready_to_begin">Ready to begin</string>
+    <string name="about_this_session">About this session</string>
+    <string name="your_notes">Your Notes</string>
+    
+    <!-- Add Meditation Screen -->
+    <string name="hint_title">Title</string>
+    <string name="hint_title_placeholder">Morning Meditation</string>
+    <string name="hint_description">Description</string>
+    <string name="hint_description_placeholder">A peaceful morning routine…</string>
+    <string name="duration_label">Duration: %1$d minutes</string>
+    <string name="category">Category</string>
+    <string name="hint_notes">Notes</string>
+    <string name="hint_notes_placeholder">Add personal notes or intentions…</string>
+    <string name="set_reminder_title">Set Reminder</string>
+    <string name="get_notified_practice">Get notified for your practice</string>
+    <string name="save_meditation">Save Meditation</string>
+    
+    <!-- Meditation Categories -->
+    <string name="category_mindfulness">Mindfulness</string>
+    <string name="category_breathing">Breathing</string>
+    <string name="category_sleep">Sleep</string>
+    <string name="category_stress_relief">Stress Relief</string>
+    <string name="category_focus">Focus</string>
+    <string name="category_gratitude">Gratitude</string>
+    <string name="category_body_scan">Body Scan</string>
+    <string name="category_guided">Guided</string>
+    <string name="category_all">All</string>
+    
+    <!-- Workout Screen -->
+    <string name="workouts_title">Workouts</string>
+    <string name="lets_get_moving">Let\'s Get Moving! 💪</string>
+    <string name="track_workouts_goals">Track your workouts and reach your fitness goals</string>
+    <string name="recommended_workouts">Recommended Workouts</string>
+    <string name="your_workouts">Your Workouts</string>
+    <string name="no_custom_workouts">No custom workouts yet</string>
+    <string name="create_workout_routine">Create your own workout routine to track your progress</string>
+    <string name="workout_total">Total</string>
+    <string name="workout_workouts">workouts</string>
+    <string name="workout_time">Time</string>
+    <string name="exercises_count">%1$d exercises</string>
+    <string name="progress">Progress</string>
+    <string name="current_streak">🔥 Current Streak</string>
+    <string name="keep_it_up">Keep it up!</string>
+    <string name="weekly_progress">Weekly Progress</string>
+    <string name="monthly_progress">Monthly Progress</string>
+    <string name="yearly_progress">Yearly Progress</string>
+    <string name="workouts_completed">%1$d / %2$d workouts</string>
+    
+    <!-- Workout Categories -->
+    <string name="category_strength">Strength</string>
+    <string name="category_cardio">Cardio</string>
+    <string name="category_flexibility">Flexibility</string>
+    <string name="category_hiit">HIIT</string>
+    <string name="category_yoga">Yoga</string>
+    <string name="category_crossfit">CrossFit</string>
+    <string name="category_bodyweight">Bodyweight</string>
+    <string name="category_powerlifting">Powerlifting</string>
+    
+    <!-- Add Workout Screen -->
+    <string name="create_workout">Create Workout</string>
+    <string name="workout_name">Workout Name</string>
+    <string name="workout_name_placeholder">e.g., Push Day</string>
+    <string name="describe_workout">Describe your workout…</string>
+    <string name="exercises_label">Exercises (%1$d)</string>
+    <string name="add">Add</string>
+    <string name="no_exercises_added">No exercises added yet</string>
+    <string name="save_workout">Save Workout</string>
+    <string name="sets">Sets</string>
+    <string name="reps">Reps</string>
+    <string name="weight_kg">Weight (kg)</string>
+    <string name="select_exercise">Select Exercise</string>
+    <string name="add_custom_exercise">Add Custom Exercise</string>
+    <string name="create_custom_exercise">Create Custom Exercise</string>
+    <string name="exercise_name">Exercise Name</string>
+    <string name="muscle_group">Muscle Group</string>
+    <string name="add_exercise">Add Exercise</string>
+    <string name="popular_exercises">Popular Exercises</string>
+    
+    <!-- Muscle Groups -->
+    <string name="muscle_chest">Chest</string>
+    <string name="muscle_back">Back</string>
+    <string name="muscle_shoulders">Shoulders</string>
+    <string name="muscle_biceps">Biceps</string>
+    <string name="muscle_triceps">Triceps</string>
+    <string name="muscle_legs">Legs</string>
+    <string name="muscle_quadriceps">Quadriceps</string>
+    <string name="muscle_hamstrings">Hamstrings</string>
+    <string name="muscle_glutes">Glutes</string>
+    <string name="muscle_abs">Abs</string>
+    <string name="muscle_core">Core</string>
+    <string name="muscle_full_body">Full Body</string>
+    
+    <!-- Workout Detail Screen -->
+    <string name="start_workout">Start Workout</string>
+    <string name="exercises">Exercises</string>
+    <string name="rest_time">Rest Time</string>
+    <string name="skip_rest">Skip Rest</string>
+    <string name="calories_short">cal</string>
+    
+    <!-- Profile Screen -->
+    <string name="profile_title">Profile</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="update_personal_info">Update your personal information</string>
+    <string name="reminders">Reminders</string>
+    <string name="manage_notifications">Manage your notifications</string>
+    <string name="insights">Insights</string>
+    <string name="view_progress_stats">View your progress and stats</string>
+    <string name="account">Account</string>
+    <string name="preferences">Preferences</string>
+    <string name="health_connect">Health Connect</string>
+    <string name="sync_health_apps">Sync with health apps</string>
+    <string name="about">About</string>
+    <string name="app_version_info">App version and information</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="log_out_account">Log out of your account</string>
+    <string name="day_streak">Day Streak</string>
+    <string name="total_time">Total Time</string>
+    
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="notifications">Notifications</string>
+    <string name="push_notifications">Push Notifications</string>
+    <string name="receive_reminder_notifications">Receive reminder notifications</string>
+    <string name="sound">Sound</string>
+    <string name="play_notification_sounds">Play notification sounds</string>
+    <string name="vibration">Vibration</string>
+    <string name="vibrate_notifications">Vibrate on notifications</string>
+    <string name="volume">Volume</string>
+    <string name="appearance">Appearance</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="use_dark_theme">Use dark theme</string>
+    <string name="theme_color">Theme Color</string>
+    <string name="meditation_settings">Meditation</string>
+    <string name="default_duration">Default Duration</string>
+    <string name="ten_minutes">10 minutes</string>
+    <string name="background_sounds">Background Sounds</string>
+    <string name="nature_sounds">Nature sounds</string>
+    <string name="breathing_pattern">Breathing Pattern</string>
+    <string name="breathing_478">4-7-8 technique</string>
+    <string name="workout_settings">Workout</string>
+    <string name="weight_unit">Weight Unit</string>
+    <string name="kilograms">Kilograms (kg)</string>
+    <string name="rest_timer_sound">Rest Timer Sound</string>
+    <string name="bell">Bell</string>
+    <string name="auto_start_rest_timer">Auto-start Rest Timer</string>
+    <string name="start_timer_after_set">Start timer after completing set</string>
+    <string name="data">Data</string>
+    <string name="export_data">Export Data</string>
+    <string name="download_history">Download your workout and meditation history</string>
+    <string name="clear_cache">Clear Cache</string>
+    <string name="free_up_storage">Free up storage space</string>
+    
+    <!-- Insights Screen -->
+    <string name="insights_title">Insights</string>
+    <string name="week">Week</string>
+    <string name="month">Month</string>
+    <string name="year">Year</string>
+    <string name="progress_this_week">Your Progress This Week</string>
+    <string name="activity_summary">Activity Summary</string>
+    <string name="weekly_activity">Weekly Activity</string>
+    <string name="achievements">Achievements</string>
+    <string name="streaks_goals">Streaks &amp; Goals</string>
+    <string name="health_metrics">Health Metrics</string>
+    <string name="avg_heart_rate">Avg. Heart Rate</string>
+    <string name="bpm">bpm</string>
+    <string name="calories_burned">Calories Burned</string>
+    <string name="kcal">kcal</string>
+    <string name="longest_streak">Longest Streak</string>
+    <string name="total_days">Total Days</string>
+    <string name="weekly_goals">Weekly Goals</string>
+    <string name="meditate_weekly">Meditate 5x per week</string>
+    <string name="workout_weekly">Workout 3x per week</string>
+    <string name="total_mindful_minutes">Total mindful minutes: 60</string>
+    <string name="achievement_7_day">7 Day Streak</string>
+    <string name="achievement_first_meditation">First Meditation</string>
+    <string name="achievement_10_workouts">10 Workouts</string>
+    <string name="achievement_30_day">30 Day Streak</string>
+    <string name="achievement_100_sessions">100 Sessions</string>
+    
+    <!-- Reminder Screen -->
+    <string name="reminders_title">Reminders</string>
+    <string name="no_reminders_yet">No reminders yet</string>
+    <string name="set_up_reminders">Set up reminders to stay on track with your meditation and workout goals</string>
+    <string name="add_reminder">Add Reminder</string>
+    <string name="reminder_deleted">Reminder deleted</string>
+    <string name="daily">Daily</string>
+    <string name="set_meditation_reminder">Set Meditation Reminder</string>
+    <string name="set_workout_reminder">Set Workout Reminder</string>
+    <string name="reminder_title">Reminder Title</string>
+    <string name="morning_meditation">Morning Meditation</string>
+    <string name="gym_time">Gym Time</string>
+    <string name="time">Time</string>
+    <string name="tap_select_time">Tap to select time</string>
+    <string name="repeat">Repeat</string>
+    <string name="select_days">Select Days</string>
+    <string name="add_notes_intentions">Add any notes or intentions…</string>
+    <string name="enable_reminder">Enable Reminder</string>
+    <string name="receive_notifications">You\'ll receive notifications</string>
+    <string name="save_reminder">Save Reminder</string>
+    
+    <!-- Repeat Types -->
+    <string name="repeat_once">Once</string>
+    <string name="repeat_daily">Daily</string>
+    <string name="repeat_weekly">Weekly</string>
+    <string name="repeat_custom">Custom</string>
+    
+    <!-- Days of Week -->
+    <string name="day_sun">Sun</string>
+    <string name="day_mon">Mon</string>
+    <string name="day_tue">Tue</string>
+    <string name="day_wed">Wed</string>
+    <string name="day_thu">Thu</string>
+    <string name="day_fri">Fri</string>
+    <string name="day_sat">Sat</string>
+    
+    <!-- Progress Periods -->
+    <string name="period_weekly">Weekly</string>
+    <string name="period_monthly">Monthly</string>
+    <string name="period_yearly">Yearly</string>
+    
+    <!-- Common Actions -->
+    <string name="back">Back</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="done">Done</string>
+    <string name="skip">Skip</string>
+    <string name="next">Next</string>
+    <string name="retry">Retry</string>
+    <string name="loading">Loading…</string>
+    <string name="selected">Selected</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="reset">Reset</string>
+    <string name="complete">Complete</string>
+    
+    <!-- Success Messages -->
+    <string name="success_meditation_added">Meditation added successfully</string>
+    <string name="success_workout_added">Workout added successfully</string>
+    <string name="success_reminder_scheduled">Reminder scheduled</string>
+    <string name="success_session_completed">Session completed!</string>
+    
+    <!-- Error Messages (Additional) -->
+    <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="error_network">Network error. Please check your connection.</string>
+    <string name="error_load_data">Failed to load data</string>
+    <string name="error_save_data">Failed to save data</string>
+    <string name="error_delete_data">Failed to delete data</string>
+    
+    <!-- Notifications -->
+    <string name="notification_channel_name">MindSync Reminders</string>
+    <string name="notification_channel_description">Notifications for meditation and workout reminders</string>
+    <string name="notification_time_activity">Time for your activity!</string>
+    
+    <!-- Content Descriptions -->
+    <string name="cd_back">Go back</string>
+    <string name="cd_add">Add new item</string>
+    <string name="cd_delete">Delete item</string>
+    <string name="cd_edit">Edit item</string>
+    <string name="cd_play">Play</string>
+    <string name="cd_pause">Pause</string>
+    <string name="cd_notification">Notification</string>
+    <string name="cd_completed">Completed</string>
+    <string name="cd_profile_picture">Profile picture</string>
+    
+    <!-- Medicine Screen -->
+    <string name="medicine_title">Medicine &amp; Supplements</string>
+    <string name="todays_medicines">Today\'s Medicines</string>
+    <string name="stay_on_track_health">Stay on track with your health routine</string>
+    <string name="your_medicines">Your Medicines</string>
+    <string name="add_medicine">Add Medicine</string>
+    <string name="taken">Taken</string>
+    <string name="pending">Pending</string>
+    <string name="take">Take</string>
+    <string name="medicine_name">Medicine Name</string>
+    <string name="medicine_dosage">Dosage</string>
+    <string name="medicine_frequency">Frequency</string>
+    <string name="medicine_instructions">Instructions</string>
+    <string name="medicine_side_effects">Side Effects</string>
+    <string name="start_date">Start Date</string>
+    <string name="end_date">End Date</string>
+    <string name="times_per_day">Times per day</string>
+    <string name="save_medicine">Save Medicine</string>
+    
+    <!-- Medicine Units -->
+    <string name="unit_tablet">Tablet</string>
+    <string name="unit_capsule">Capsule</string>
+    <string name="unit_ml">ml</string>
+    <string name="unit_mg">mg</string>
+    <string name="unit_drops">Drops</string>
+    <string name="unit_injection">Injection</string>
+    <string name="unit_cream">Cream</string>
+    <string name="unit_spray">Spray</string>
+    <string name="unit_patch">Patch</string>
+    
+    <!-- Medicine Frequency -->
+    <string name="freq_once">Once</string>
+    <string name="freq_daily">Daily</string>
+    <string name="freq_twice_daily">Twice Daily</string>
+    <string name="freq_three_times">3 Times Daily</string>
+    <string name="freq_every_other_day">Every Other Day</string>
+    <string name="freq_weekly">Weekly</string>
+    <string name="freq_as_needed">As Needed</string>
+    
+    <!-- Skincare Screen -->
+    <string name="skincare_title">Skincare Routines</string>
+    <string name="your_skin_journey">Your Skin Journey</string>
+    <string name="consistency_key_glowing">Consistency is the key to glowing skin</string>
+    <string name="your_routines">Your Routines</string>
+    <string name="add_routine">Add Routine</string>
+    <string name="done_today">Done Today</string>
+    <string name="products">Products</string>
+    <string name="start">Start</string>
+    <string name="routine_name">Routine Name</string>
+    <string name="routine_type">Routine Type</string>
+    <string name="estimated_time">Estimated Time</string>
+    <string name="add_step">Add Step</string>
+    <string name="product_name">Product Name</string>
+    <string name="product_brand">Product Brand</string>
+    <string name="save_routine">Save Routine</string>
+    
+    <!-- Skincare Routine Types -->
+    <string name="routine_morning">Morning</string>
+    <string name="routine_evening">Evening</string>
+    <string name="routine_weekly">Weekly</string>
+    <string name="routine_treatment">Treatment</string>
+    
+    <!-- Skincare Categories -->
+    <string name="skincare_cleanser">Cleanser</string>
+    <string name="skincare_toner">Toner</string>
+    <string name="skincare_serum">Serum</string>
+    <string name="skincare_moisturizer">Moisturizer</string>
+    <string name="skincare_sunscreen">Sunscreen</string>
+    <string name="skincare_eye_cream">Eye Cream</string>
+    <string name="skincare_face_mask">Face Mask</string>
+    <string name="skincare_exfoliator">Exfoliator</string>
+    <string name="skincare_treatment">Treatment</string>
+    <string name="skincare_face_oil">Face Oil</string>
+    <string name="skincare_lip_care">Lip Care</string>
+    
+    <!-- Skin Conditions -->
+    <string name="skin_great">Great</string>
+    <string name="skin_good">Good</string>
+    <string name="skin_normal">Normal</string>
+    <string name="skin_dry">Dry</string>
+    <string name="skin_oily">Oily</string>
+    <string name="skin_irritated">Irritated</string>
+    <string name="skin_breakout">Breakout</string>
+    
+    <!-- Dashboard -->
+    <string name="good_morning">Good Morning!</string>
+    <string name="good_afternoon">Good Afternoon!</string>
+    <string name="good_evening">Good Evening!</string>
+    <string name="todays_progress">Today\'s Progress</string>
+    <string name="keep_going_great">Keep going, you\'re doing great!</string>
+    <string name="quick_actions">Quick Actions</string>
+    <string name="todays_tasks">Today\'s Tasks</string>
+    <string name="find_peace">Find peace</string>
+    <string name="get_fit">Get fit</string>
+    <string name="stay_healthy">Stay healthy</string>
+    <string name="glow_up">Glow up</string>
+    
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_meditate">Meditate</string>
+    <string name="nav_workout">Workout</string>
+    <string name="nav_reminders">Reminders</string>
+    <string name="nav_profile">Profile</string>
 </resources>

@@ -2,40 +2,47 @@ package com.example.mindsync.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
-
-// Primary colors
-val PrimaryLight = Color(0xFFE091E8)
-val PrimaryDark = Color(0xFFB15FE8)
-val PrimaryGradientStart = Color(0xFFE091E8)
-val PrimaryGradientEnd = Color(0xFF9B7AE8)
+// Dark Theme Colors (Primary - matching reference images)
+val PrimaryBlue = Color(0xFF4A90D9)  // Blue accent like in reference
+val PrimaryLight = Color(0xFF4A90D9)
+val PrimaryDark = Color(0xFF4A90D9)
+val PrimaryGradientStart = Color(0xFF4A90D9)
+val PrimaryGradientEnd = Color(0xFF6B5CE7)
 
 // Secondary colors
-val SecondaryLight = Color(0xFF4285F4) // Google blue
-val SecondaryDark = Color(0xFF3367D6)
+val SecondaryLight = Color(0xFF6B5CE7)  // Purple accent
+val SecondaryDark = Color(0xFF6B5CE7)
+val AccentYellow = Color(0xFFFFD700)  // PRO badge color
 
-// Background colors
-val BackgroundLight = Color(0xFFF8F8F8)
-val BackgroundDark = Color(0xFF121212)
+// Background colors - Dark theme
+val BackgroundLight = Color(0xFF0D0D0D)  // Very dark background
+val BackgroundDark = Color(0xFF0D0D0D)
 
-// Surface colors
-val SurfaceLight = Color(0xFFFFFFFF)
-val SurfaceDark = Color(0xFF1E1E1E)
+// Surface colors - Dark cards
+val SurfaceLight = Color(0xFF1A1A1A)  // Dark surface
+val SurfaceDark = Color(0xFF1A1A1A)
+val SurfaceVariantDark = Color(0xFF252525)  // Slightly lighter for cards
 
 // Text colors
-val TextPrimaryLight = Color(0xFF212121)
-val TextPrimaryDark = Color(0xFFE1E1E1)
-val TextSecondaryLight = Color(0xFF757575)
-val TextSecondaryDark = Color(0xFFB0B0B0)
+val TextPrimaryLight = Color(0xFFFFFFFF)  // White text
+val TextPrimaryDark = Color(0xFFFFFFFF)
+val TextSecondaryLight = Color(0xFF8E8E93)  // Gray secondary text
+val TextSecondaryDark = Color(0xFF8E8E93)
 
 // Status colors
-val SuccessGreen = Color(0xFF4CAF50)
-val ErrorRed = Color(0xFFE53935)
-val WarningYellow = Color(0xFFFFC107)
+val SuccessGreen = Color(0xFF32D74B)
+val ErrorRed = Color(0xFFFF453A)
+val WarningYellow = Color(0xFFFFD60A)
 
 // Component specific colors
-val CardBackgroundLight = Color(0xFFFFFFFF)
-val CardBackgroundDark = Color(0xFF2D2D2D)
+val CardBackgroundLight = Color(0xFF1A1A1A)
+val CardBackgroundDark = Color(0xFF1A1A1A)
+val DividerColor = Color(0xFF2C2C2E)
 
 // Progress colors
-val ProgressStart = Color(0xFFFF9D80)
-val ProgressEnd = Color(0xFFFF5C8A)
+val ProgressStart = Color(0xFF4A90D9)
+val ProgressEnd = Color(0xFF6B5CE7)
+
+// Workout specific colors
+val WorkoutBlue = Color(0xFF4A90D9)
+val WorkoutPurple = Color(0xFF6B5CE7)

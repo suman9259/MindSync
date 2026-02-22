@@ -1,21 +1,30 @@
 package com.example.mindsync.presentation.dashboard
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mindsync.presentation.base.BaseViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class DashboardViewModel @Inject constructor() :
-    BaseViewModel<DashboardState, DashboardIntent, DashboardEffect>(DashboardState()) {
+class DashboardViewModel : ViewModel() {
+    
+    private val _state = MutableStateFlow(DashboardState())
+    val state: StateFlow<DashboardState> = _state.asStateFlow()
+    
+    private val _effect = Channel<DashboardEffect>(Channel.BUFFERED)
+    val effect = _effect.receiveAsFlow()
 
     init {
-        processIntent(DashboardIntent.LoadDashboardData)
+        loadDashboardData()
     }
 
-    override fun processIntent(intent: DashboardIntent) {
+    fun processIntent(intent: DashboardIntent) {
         when (intent) {
             is DashboardIntent.LoadDashboardData -> loadDashboardData()
             is DashboardIntent.SelectTab -> selectTab(intent.index)
@@ -24,15 +33,20 @@ class DashboardViewModel @Inject constructor() :
     }
 
     private fun loadDashboardData() {
-        setState { copy(isLoading = true, error = null) }
+        _state.update { it.copy(isLoading = true, error = null) }
 
         viewModelScope.launch {
             try {
-                // Simulate API call or data loading
-                delay(500) // Simulate network delay
+                delay(500)
+                
+                val currentUser = FirebaseAuth.getInstance().currentUser
+                val userName = currentUser?.displayName 
+                    ?: currentUser?.phoneNumber 
+                    ?: "User"
 
-                setState {
-                    copy(
+                _state.update {
+                    it.copy(
+                        userName = userName,
                         progress = 0.5f,
                         completedSteps = listOf("Gentle cleanser", "Vitamin C serum"),
                         totalSteps = 4,
@@ -40,8 +54,8 @@ class DashboardViewModel @Inject constructor() :
                     )
                 }
             } catch (e: Exception) {
-                setState { copy(isLoading = false, error = e.message) }
-                setEffect { DashboardEffect.ShowError("Failed to load dashboard data") }
+                _state.update { it.copy(isLoading = false, error = e.message) }
+                _effect.send(DashboardEffect.ShowError("Failed to load dashboard data"))
             }
         }
     }
@@ -50,7 +64,9 @@ class DashboardViewModel @Inject constructor() :
         if (index !in 0..4) return
 
         val tab = DashboardTab.entries[index]
-        setState { copy(selectedTab = index) }
-        setEffect { DashboardEffect.NavigateToTab(tab) }
+        _state.update { it.copy(selectedTab = index) }
+        viewModelScope.launch {
+            _effect.send(DashboardEffect.NavigateToTab(tab))
+        }
     }
 }

@@ -1,5 +1,9 @@
 package com.example.mindsync.presentation.dashboard
 
+import com.example.mindsync.presentation.base.MviEffect
+import com.example.mindsync.presentation.base.MviIntent
+import com.example.mindsync.presentation.base.MviState
+
 // State
 data class DashboardState(
     val userName: String = "",
