@@ -100,9 +100,9 @@ fun WorkoutScreen(
         }
     }
 
-    val darkBackground = Color(0xFF0D0D0D)
-    val cardBackground = Color(0xFF1A1A1A)
-    val blueAccent = Color(0xFF4A90D9)
+    val darkBackground = Color(0xFF121212)  // Material dark background
+    val cardBackground = Color(0xFF1E1E1E)  // Material dark surface
+    val tealAccent = Color(0xFF03DAC5)       // Material Teal accent
 
     Scaffold(
         containerColor = darkBackground,
@@ -132,7 +132,7 @@ fun WorkoutScreen(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0xFFFFD700))
+                            .background(Color(0xFFFFF3B0))  // Pastel yellow
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Text(
@@ -155,7 +155,7 @@ fun WorkoutScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = blueAccent)
+                CircularProgressIndicator(color = tealAccent)
             }
         } else {
             LazyColumn(
@@ -276,7 +276,7 @@ fun WorkoutScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(8.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A1A))
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF2D2D2D))  // Material dark surface variant
                     ) {
                         Row(
                             modifier = Modifier.padding(12.dp),
@@ -318,7 +318,7 @@ fun WorkoutScreen(
                     RoutineCard(
                         workout = workout,
                         onStart = { viewModel.processIntent(WorkoutIntent.SelectWorkout(workout)) },
-                        blueAccent = blueAccent,
+                        tealAccent = tealAccent,
                         cardBackground = cardBackground
                     )
                 }
@@ -342,7 +342,7 @@ fun WorkoutScreen(
 private fun RoutineCard(
     workout: Workout,
     onStart: () -> Unit,
-    blueAccent: Color,
+    tealAccent: Color,
     cardBackground: Color
 ) {
     Card(
@@ -391,7 +391,7 @@ private fun RoutineCard(
                     .fillMaxWidth()
                     .clickable(onClick = onStart),
                 shape = RoundedCornerShape(8.dp),
-                colors = CardDefaults.cardColors(containerColor = blueAccent)
+                colors = CardDefaults.cardColors(containerColor = tealAccent)
             ) {
                 Text(
                     "Start Routine",
@@ -581,7 +581,7 @@ private fun WorkoutHeader(state: WorkoutState) {
                     .fillMaxWidth()
                     .background(
                         brush = Brush.linearGradient(
-                            colors = listOf(Color(0xFFFF6B6B), Color(0xFFFF8E53), Color(0xFFFFD93D))
+                            colors = listOf(Color(0xFFF5B8D0), Color(0xFFFFDAC1), Color(0xFFFFF3B0))  // Pastel rose to peach to yellow
                         )
                     )
                     .padding(24.dp)

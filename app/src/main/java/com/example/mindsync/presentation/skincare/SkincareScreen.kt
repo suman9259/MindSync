@@ -183,9 +183,9 @@ fun SkincareScreen(
         )
     }
 
-    val darkBackground = Color(0xFF0D0D0D)
-    val cardBackground = Color(0xFF1A1A1A)
-    val blueAccent = Color(0xFF4A90D9)
+    val darkBackground = Color(0xFF121212)  // Material dark background
+    val cardBackground = Color(0xFF1E1E1E)  // Material dark surface
+    val tealAccent = Color(0xFF03DAC5)       // Material Teal accent
     
     Scaffold(
         containerColor = darkBackground,
@@ -210,7 +210,7 @@ fun SkincareScreen(
                 onClick = onNavigateToAddSkincare,
                 icon = { Icon(Icons.Default.Add, contentDescription = null) },
                 text = { Text("Add Routine") },
-                containerColor = blueAccent
+                containerColor = tealAccent
             )
         }
     ) { padding ->
@@ -234,7 +234,7 @@ fun SkincareScreen(
                             .fillMaxWidth()
                             .background(
                                 brush = Brush.linearGradient(
-                                    colors = listOf(Color(0xFFE91E63), Color(0xFFF48FB1))
+                                    colors = listOf(Color(0xFF03DAC5), Color(0xFF64FFDA))  // Material Teal gradient
                                 )
                             )
                             .padding(20.dp)
@@ -276,7 +276,7 @@ fun SkincareScreen(
                             onClick = { selectedFilter = filter },
                             label = { Text(filter) },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = Color(0xFFE91E63),
+                                selectedContainerColor = Color(0xFF03DAC5),  // Material Teal
                                 selectedLabelColor = Color.White
                             )
                         )
@@ -343,7 +343,7 @@ private fun SkincareRoutineCard(
     onStart: () -> Unit = {}
 ) {
     val backgroundColor by animateColorAsState(
-        if (routine.completedToday) Color(0xFFFCE4EC) else MaterialTheme.colorScheme.surface,
+        if (routine.completedToday) Color(0xFF03DAC5).copy(alpha = 0.2f) else MaterialTheme.colorScheme.surface,
         label = "bgColor"
     )
     
@@ -368,8 +368,8 @@ private fun SkincareRoutineCard(
                         .size(56.dp)
                         .clip(CircleShape)
                         .background(
-                            if (routine.completedToday) Color(0xFFE91E63)
-                            else Color(0xFFFCE4EC)
+                            if (routine.completedToday) Color(0xFF03DAC5)  // Material Teal
+                            else Color(0xFF03DAC5).copy(alpha = 0.3f)
                         ),
                     contentAlignment = Alignment.Center
                 ) {
@@ -461,7 +461,7 @@ private fun SkincareRoutineCard(
                         Text(
                             "🔥 ${routine.currentStreak} days",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFFFF9800)
+                            color = Color(0xFFFFD54F)  // Amber
                         )
                     }
                 }
@@ -470,7 +470,7 @@ private fun SkincareRoutineCard(
                     Button(
                         onClick = onStart,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFE91E63)
+                            containerColor = Color(0xFF03DAC5)  // Material Teal
                         ),
                         shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
@@ -490,7 +490,7 @@ private fun SkincareRoutineCard(
                             onClick = { },
                             label = { Text(step.category.emoji + " " + step.name, style = MaterialTheme.typography.labelSmall) },
                             colors = AssistChipDefaults.assistChipColors(
-                                containerColor = Color(0xFFFCE4EC)
+                                containerColor = Color(0xFF03DAC5).copy(alpha = 0.2f)  // Teal tint
                             )
                         )
                     }

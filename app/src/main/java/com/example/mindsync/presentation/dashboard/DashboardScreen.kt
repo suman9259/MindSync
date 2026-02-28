@@ -5,9 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -17,15 +14,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.text.style.TextOverflow
 import java.text.SimpleDateFormat
@@ -59,16 +53,6 @@ fun DashboardScreen(
     val onNavigationItemSelected: (Int) -> Unit = { viewModel.processIntent(DashboardIntent.SelectTab(it)) }
     val onRetry: () -> Unit = { viewModel.processIntent(DashboardIntent.Retry) }
 
-    val motivationalQuotes = listOf(
-        "✨ Every day is a new beginning. Take a deep breath and start again.",
-        "🌟 Believe you can and you're halfway there.",
-        "💪 The only bad workout is the one that didn't happen.",
-        "🧘 Peace comes from within. Do not seek it without.",
-        "🌿 Take care of your body. It's the only place you have to live.",
-        "🚀 Small steps every day lead to big changes.",
-        "🌈 Your health is an investment, not an expense."
-    )
-    val currentQuote = remember { motivationalQuotes.random() }
     val currentDate = remember {
         SimpleDateFormat("EEEE, MMMM d", Locale.getDefault()).format(Date())
     }
@@ -91,10 +75,10 @@ fun DashboardScreen(
         ).sortedBy { it.priority }
     }
     
-    // Calculate real progress based on completed tasks
-    val totalTasks = 5
-    val completedTasks = remember { mutableStateOf(2) } // Can be updated based on actual completion
-    val realProgress = completedTasks.value.toFloat() / totalTasks
+    // Use real progress from state (daily progress that resets each day)
+    val totalTasks = if (state.totalSteps > 0) state.totalSteps else 5
+    val completedTasks = state.completedTasksCount
+    val realProgress = state.progress
 
     if (state.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -114,9 +98,8 @@ fun DashboardScreen(
         return
     }
 
-    val darkBackground = Color(0xFF0D0D0D)
-    val cardBackground = Color(0xFF1A1A1A)
-    val blueAccent = Color(0xFF4A90D9)
+    val darkBackground = Color(0xFF121212)  // Material dark background
+    val cardBackground = Color(0xFF1E1E1E)
     
     Scaffold(
         containerColor = darkBackground,
@@ -217,7 +200,7 @@ fun DashboardScreen(
                 item {
                     DailyProgressCard(
                         progress = realProgress,
-                        completedTasks = completedTasks.value,
+                        completedTasks = completedTasks,
                         totalTasks = totalTasks,
                         onClick = onNavigateToInsights
                     )
@@ -307,7 +290,7 @@ private fun SetReminderButton(onClick: () -> Unit) {
                 .fillMaxSize()
                 .background(
                     brush = Brush.linearGradient(
-                        colors = listOf(Color(0xFF6366F1), Color(0xFF8B5CF6))
+                        colors = listOf(Color(0xFF03DAC5), Color(0xFF64FFDA))  // Material Teal gradient
                     )
                 ),
             contentAlignment = Alignment.Center
@@ -424,7 +407,7 @@ private fun QuickNoteSection(
                     onClick = onSaveNote,
                     modifier = Modifier
                         .size(40.dp)
-                        .background(Color(0xFF4CAF50), CircleShape)
+                        .background(Color(0xFF03DAC5), CircleShape)  // Material Teal
                 ) {
                     Icon(Icons.Default.Check, contentDescription = "Save", tint = Color.White, modifier = Modifier.size(20.dp))
                 }
@@ -435,7 +418,7 @@ private fun QuickNoteSection(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF9C4))
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF03DAC5).copy(alpha = 0.15f))  // Teal tint on dark
             ) {
                 Row(
                     modifier = Modifier
@@ -506,8 +489,8 @@ private fun DailyProgressCard(
                 .background(
                     brush = Brush.linearGradient(
                         colors = listOf(
-                            Color(0xFF667eea),
-                            Color(0xFF764ba2)
+                            Color(0xFF03DAC5),  // Material Teal
+                            Color(0xFF64FFDA)   // Light Teal
                         )
                     )
                 )
@@ -566,26 +549,6 @@ private fun DailyProgressCard(
     }
 }
 
-@Composable
-private fun MotivationalCard(quote: String) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Text(
-            text = quote,
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(16.dp),
-            lineHeight = 22.sp
-        )
-    }
-}
 
 @Composable
 private fun QuickActionsRow(
@@ -595,10 +558,10 @@ private fun QuickActionsRow(
     onSkincareClick: () -> Unit
 ) {
     val actions = listOf(
-        QuickAction("🧘", "Meditate", listOf(Color(0xFF667eea), Color(0xFF764ba2)), onMeditationClick),
-        QuickAction("💪", "Workout", listOf(Color(0xFFf093fb), Color(0xFFf5576c)), onWorkoutClick),
-        QuickAction("💊", "Medicine", listOf(Color(0xFF4CAF50), Color(0xFF81C784)), onMedicineClick),
-        QuickAction("✨", "Skincare", listOf(Color(0xFFE91E63), Color(0xFFF48FB1)), onSkincareClick)
+        QuickAction("🧘", "Meditate", listOf(Color(0xFFBB86FC), Color(0xFF9C27B0)), onMeditationClick),  // Purple
+        QuickAction("💪", "Workout", listOf(Color(0xFF03DAC5), Color(0xFF00C2A8)), onWorkoutClick),  // Teal
+        QuickAction("💊", "Medicine", listOf(Color(0xFF03DAC5), Color(0xFF64FFDA)), onMedicineClick),  // Teal gradient
+        QuickAction("✨", "Skincare", listOf(Color(0xFF03DAC5), Color(0xFFBB86FC)), onSkincareClick)  // Teal to purple
     )
 
     LazyRow(

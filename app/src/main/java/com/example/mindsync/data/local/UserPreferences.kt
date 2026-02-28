@@ -22,6 +22,11 @@ class UserPreferences(private val context: Context) {
             preferences[IS_LOGGED_IN] ?: false
         }
 
+    val lastResetDate: Flow<String?> = dataStore.data
+        .map { preferences ->
+            preferences[LAST_RESET_DATE]
+        }
+
     suspend fun saveUserEmail(email: String) {
         dataStore.edit { preferences ->
             preferences[USER_EMAIL] = email
@@ -40,8 +45,15 @@ class UserPreferences(private val context: Context) {
         }
     }
 
+    suspend fun saveLastResetDate(date: String) {
+        dataStore.edit { preferences ->
+            preferences[LAST_RESET_DATE] = date
+        }
+    }
+
     companion object {
         private val USER_EMAIL = stringPreferencesKey("user_email")
         private val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
+        private val LAST_RESET_DATE = stringPreferencesKey("last_reset_date")
     }
 }

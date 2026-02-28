@@ -222,9 +222,9 @@ fun MedicineScreen(
         )
     }
 
-    val darkBackground = Color(0xFF0D0D0D)
-    val cardBackground = Color(0xFF1A1A1A)
-    val blueAccent = Color(0xFF4A90D9)
+    val darkBackground = Color(0xFF121212)  // Material dark background
+    val cardBackground = Color(0xFF1E1E1E)  // Material dark surface
+    val tealAccent = Color(0xFF03DAC5)       // Material Teal accent
     
     Scaffold(
         containerColor = darkBackground,
@@ -249,7 +249,7 @@ fun MedicineScreen(
                 onClick = onNavigateToAddMedicine,
                 icon = { Icon(Icons.Default.Add, contentDescription = null) },
                 text = { Text("Add Medicine") },
-                containerColor = blueAccent
+                containerColor = tealAccent
             )
         }
     ) { padding ->
@@ -273,7 +273,7 @@ fun MedicineScreen(
                             .fillMaxWidth()
                             .background(
                                 brush = Brush.linearGradient(
-                                    colors = listOf(Color(0xFF4CAF50), Color(0xFF81C784))
+                                    colors = listOf(Color(0xFF03DAC5), Color(0xFF64FFDA))  // Material Teal gradient
                                 )
                             )
                             .padding(20.dp)
@@ -315,7 +315,7 @@ fun MedicineScreen(
                             onClick = { selectedFilter = filter },
                             label = { Text(filter) },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = Color(0xFF4CAF50),
+                                selectedContainerColor = Color(0xFF03DAC5),  // Material Teal
                                 selectedLabelColor = Color.White
                             )
                         )
@@ -385,7 +385,7 @@ private fun MedicineCard(
     onDelete: () -> Unit = {}
 ) {
     val backgroundColor by animateColorAsState(
-        if (medicine.takenToday) Color(0xFFE8F5E9) else MaterialTheme.colorScheme.surface,
+        if (medicine.takenToday) Color(0xFF03DAC5).copy(alpha = 0.2f) else MaterialTheme.colorScheme.surface,
         label = "bgColor"
     )
     
@@ -407,8 +407,8 @@ private fun MedicineCard(
                     .size(56.dp)
                     .clip(CircleShape)
                     .background(
-                        if (medicine.takenToday) Color(0xFF4CAF50)
-                        else Color(0xFFE3F2FD)
+                        if (medicine.takenToday) Color(0xFF03DAC5)  // Material Teal
+                        else Color(0xFF03DAC5).copy(alpha = 0.3f)  // Teal light
                     ),
                 contentAlignment = Alignment.Center
             ) {
@@ -458,7 +458,7 @@ private fun MedicineCard(
                         Text(
                             "🔥 ${medicine.currentStreak} day streak",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFFFF9800)
+                            color = Color(0xFFFFD54F)  // Amber
                         )
                     }
                 }
@@ -492,7 +492,7 @@ private fun MedicineCard(
                 Button(
                     onClick = onToggleTaken,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (medicine.takenToday) Color(0xFFFF9800) else Color(0xFF4CAF50)
+                        containerColor = if (medicine.takenToday) Color(0xFFCF6679) else Color(0xFF03DAC5)  // Error or Teal
                     ),
                     shape = RoundedCornerShape(12.dp),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)

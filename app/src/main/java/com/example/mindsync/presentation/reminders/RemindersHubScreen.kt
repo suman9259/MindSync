@@ -52,33 +52,33 @@ fun RemindersHubScreen(
     val tabs = listOf("All", "Health", "Personal", "Shopping", "Studies", "Family")
 
     val healthReminders = listOf(
-        ReminderCategory("medicine", "Medicine & Refills", "💊", 4, listOf(Color(0xFF4CAF50), Color(0xFF81C784)), "medicine"),
-        ReminderCategory("workout", "Workout", "💪", 3, listOf(Color(0xFFf093fb), Color(0xFFf5576c)), "workout"),
-        ReminderCategory("skincare", "Skincare", "✨", 2, listOf(Color(0xFFE91E63), Color(0xFFF48FB1)), "skincare"),
-        ReminderCategory("water", "Water Intake", "💧", 8, listOf(Color(0xFF2196F3), Color(0xFF64B5F6)), "water"),
-        ReminderCategory("sleep", "Sleep Tracker", "😴", 1, listOf(Color(0xFF1a237e), Color(0xFF534bae)), "sleep")
+        ReminderCategory("medicine", "Medicine & Refills", "💊", 4, listOf(Color(0xFF03DAC5), Color(0xFF64FFDA)), "medicine"),
+        ReminderCategory("workout", "Workout", "💪", 3, listOf(Color(0xFF03DAC5), Color(0xFF00C2A8)), "workout"),
+        ReminderCategory("skincare", "Skincare", "✨", 2, listOf(Color(0xFF03DAC5), Color(0xFFBB86FC)), "skincare"),
+        ReminderCategory("water", "Water Intake", "💧", 8, listOf(Color(0xFF03DAC5), Color(0xFF84FFFF)), "water"),
+        ReminderCategory("sleep", "Sleep Tracker", "😴", 1, listOf(Color(0xFFBB86FC), Color(0xFF3700B3)), "sleep")
     )
 
     val personalReminders = listOf(
-        ReminderCategory("meditation", "Meditation", "🧘", 2, listOf(Color(0xFF667eea), Color(0xFF764ba2)), "meditation"),
-        ReminderCategory("screen_time", "Screen Breaks", "�", 4, listOf(Color(0xFF7C4DFF), Color(0xFFB388FF)), "screen_time"),
-        ReminderCategory("birthdays", "Birthdays", "🎂", 5, listOf(Color(0xFFFF9800), Color(0xFFFFB74D)), "birthdays"),
-        ReminderCategory("bills", "Bills", "💰", 3, listOf(Color(0xFF795548), Color(0xFFA1887F)), "bills"),
-        ReminderCategory("vehicle", "Vehicle Care", "🚗", 2, listOf(Color(0xFF546E7A), Color(0xFF78909C)), "vehicle"),
-        ReminderCategory("plants", "Plant Care", "🌱", 5, listOf(Color(0xFF4CAF50), Color(0xFF81C784)), "plants")
+        ReminderCategory("meditation", "Meditation", "🧘", 2, listOf(Color(0xFFBB86FC), Color(0xFF9C27B0)), "meditation"),
+        ReminderCategory("screen_time", "Screen Breaks", "📱", 4, listOf(Color(0xFF03DAC5), Color(0xFFBB86FC)), "screen_time"),
+        ReminderCategory("birthdays", "Birthdays", "🎂", 5, listOf(Color(0xFFFFD54F), Color(0xFFFFC107)), "birthdays"),
+        ReminderCategory("bills", "Bills", "💰", 3, listOf(Color(0xFFFFD54F), Color(0xFF03DAC5)), "bills"),
+        ReminderCategory("vehicle", "Vehicle Care", "🚗", 2, listOf(Color(0xFF03DAC5), Color(0xFF64FFDA)), "vehicle"),
+        ReminderCategory("plants", "Plant Care", "🌱", 5, listOf(Color(0xFF03DAC5), Color(0xFF00C2A8)), "plants")
     )
 
     val shoppingReminders = listOf(
-        ReminderCategory("grocery", "Grocery List", "🛒", 12, listOf(Color(0xFF009688), Color(0xFF4DB6AC)), "grocery")
+        ReminderCategory("grocery", "Grocery List", "🛒", 12, listOf(Color(0xFF03DAC5), Color(0xFF64FFDA)), "grocery")
     )
 
     val studyReminders = listOf(
-        ReminderCategory("assignments", "Assignments", "📚", 4, listOf(Color(0xFF3F51B5), Color(0xFF7986CB)), "assignments"),
-        ReminderCategory("tests", "Test Revision", "📝", 2, listOf(Color(0xFF9C27B0), Color(0xFFBA68C8)), "tests")
+        ReminderCategory("assignments", "Assignments", "📚", 4, listOf(Color(0xFFBB86FC), Color(0xFF03DAC5)), "assignments"),
+        ReminderCategory("tests", "Test Revision", "📝", 2, listOf(Color(0xFFBB86FC), Color(0xFF9C27B0)), "tests")
     )
 
     val familyReminders = listOf(
-        ReminderCategory("family_medicine", "Family Medicine", "👨‍👩‍👧", 6, listOf(Color(0xFFE91E63), Color(0xFFF06292)), "family")
+        ReminderCategory("family_medicine", "Family Medicine", "👨‍👩‍👧", 6, listOf(Color(0xFFBB86FC), Color(0xFF03DAC5)), "family")
     )
 
     val allCategories = when (selectedTab) {
@@ -187,7 +187,7 @@ private fun QuickStatsCard() {
                 .fillMaxWidth()
                 .background(
                     brush = Brush.linearGradient(
-                        colors = listOf(Color(0xFF6366F1), Color(0xFF8B5CF6))
+                        colors = listOf(Color(0xFFB8A9E8), Color(0xFFF5B8D0))
                     )
                 )
                 .padding(20.dp)

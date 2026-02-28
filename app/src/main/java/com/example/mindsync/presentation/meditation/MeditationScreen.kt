@@ -89,9 +89,9 @@ fun MeditationScreen(
         }
     }
 
-    val darkBackground = Color(0xFF0D0D0D)
-    val cardBackground = Color(0xFF1A1A1A)
-    val blueAccent = Color(0xFF4A90D9)
+    val darkBackground = Color(0xFF121212)  // Material dark background
+    val cardBackground = Color(0xFF1E1E1E)  // Material dark surface
+    val tealAccent = Color(0xFF03DAC5)       // Material Teal accent
     
     Scaffold(
         containerColor = darkBackground,
@@ -111,7 +111,7 @@ fun MeditationScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onNavigateToAddMeditation,
-                containerColor = blueAccent
+                containerColor = tealAccent
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add Meditation")
             }
@@ -210,7 +210,7 @@ private fun MeditationHeader(state: MeditationState) {
                     .fillMaxWidth()
                     .background(
                         brush = Brush.linearGradient(
-                            colors = listOf(Color(0xFF667eea), Color(0xFF764ba2))
+                            colors = listOf(Color(0xFF03DAC5), Color(0xFF64FFDA))  // Material Teal gradient
                         )
                     )
                     .padding(24.dp)
@@ -415,13 +415,13 @@ private fun EmptyMeditationsView(onAddClick: () -> Unit) {
 
 private fun getCategoryColors(category: MeditationCategory): List<Color> {
     return when (category) {
-        MeditationCategory.MINDFULNESS -> listOf(Color(0xFF667eea), Color(0xFF764ba2))
-        MeditationCategory.BREATHING -> listOf(Color(0xFF11998e), Color(0xFF38ef7d))
-        MeditationCategory.SLEEP -> listOf(Color(0xFF2c3e50), Color(0xFF4ca1af))
-        MeditationCategory.STRESS_RELIEF -> listOf(Color(0xFFf093fb), Color(0xFFf5576c))
-        MeditationCategory.FOCUS -> listOf(Color(0xFFf2709c), Color(0xFFff9472))
-        MeditationCategory.GRATITUDE -> listOf(Color(0xFFee9ca7), Color(0xFFffdde1))
-        MeditationCategory.BODY_SCAN -> listOf(Color(0xFF4facfe), Color(0xFF00f2fe))
-        MeditationCategory.GUIDED -> listOf(Color(0xFFa8edea), Color(0xFFfed6e3))
+        MeditationCategory.MINDFULNESS -> listOf(Color(0xFFBB86FC), Color(0xFF9C27B0))  // Purple
+        MeditationCategory.BREATHING -> listOf(Color(0xFF03DAC5), Color(0xFF64FFDA))  // Teal
+        MeditationCategory.SLEEP -> listOf(Color(0xFF3700B3), Color(0xFFBB86FC))  // Deep purple
+        MeditationCategory.STRESS_RELIEF -> listOf(Color(0xFFCF6679), Color(0xFFB00020))  // Error/coral
+        MeditationCategory.FOCUS -> listOf(Color(0xFFFFD54F), Color(0xFFFFC107))  // Amber
+        MeditationCategory.GRATITUDE -> listOf(Color(0xFF03DAC5), Color(0xFFBB86FC))  // Teal to purple
+        MeditationCategory.BODY_SCAN -> listOf(Color(0xFF03DAC5), Color(0xFF00C2A8))  // Teal variants
+        MeditationCategory.GUIDED -> listOf(Color(0xFFBB86FC), Color(0xFF03DAC5))  // Purple to teal
     }
 }

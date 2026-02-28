@@ -10,6 +10,11 @@ data class DashboardState(
     val progress: Float = 0f,
     val completedSteps: List<String> = emptyList(),
     val totalSteps: Int = 0,
+    val completedTasksCount: Int = 0,
+    val medicinesTaken: Int = 0,
+    val medicinesTotal: Int = 0,
+    val skincareCompleted: Int = 0,
+    val skincareTotal: Int = 0,
     val selectedTab: Int = 0,
     val isLoading: Boolean = false,
     val error: String? = null

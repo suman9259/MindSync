@@ -25,12 +25,19 @@ private val LightColorScheme = lightColorScheme(
 private val DarkColorScheme = darkColorScheme(
     primary = PrimaryDark,
     secondary = SecondaryDark,
+    tertiary = PastelMint,
     background = BackgroundDark,
     surface = SurfaceDark,
-    onPrimary = TextPrimaryDark,
-    onSecondary = TextPrimaryDark,
+    surfaceVariant = SurfaceVariantDark,
+    onPrimary = BackgroundDark,
+    onSecondary = BackgroundDark,
+    onTertiary = BackgroundDark,
     onBackground = TextPrimaryDark,
     onSurface = TextPrimaryDark,
+    onSurfaceVariant = TextSecondaryDark,
+    error = ErrorRed,
+    onError = BackgroundDark,
+    outline = DividerColor,
 )
 
 @Composable

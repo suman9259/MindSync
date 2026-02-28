@@ -48,6 +48,7 @@ val appModule = module {
     single { get<MindSyncDatabase>().reminderDao() }
     single { get<MindSyncDatabase>().medicineDao() }
     single { get<MindSyncDatabase>().skincareDao() }
+    single { get<MindSyncDatabase>().dailyProgressDao() }
     
     // Local (Legacy - kept for compatibility)
     single { UserPreferences(androidContext()) }
@@ -77,7 +78,7 @@ val appModule = module {
     // ViewModels
     viewModel { SplashViewModel(get()) }
     viewModel { AuthViewModel(get()) }
-    viewModel { DashboardViewModel() }
+    viewModel { DashboardViewModel(get(), get()) }
     viewModel { MeditationViewModel(get(), get(), get(), get()) }
     viewModel { WorkoutViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
 }
