@@ -27,6 +27,17 @@ class UserPreferences(private val context: Context) {
             preferences[LAST_RESET_DATE]
         }
 
+    val quickNotes: Flow<List<String>> = dataStore.data
+        .map { preferences ->
+            preferences[QUICK_NOTES]?.split("|||")?.filter { it.isNotBlank() } ?: emptyList()
+        }
+
+    suspend fun saveQuickNotes(notes: List<String>) {
+        dataStore.edit { preferences ->
+            preferences[QUICK_NOTES] = notes.joinToString("|||")
+        }
+    }
+
     suspend fun saveUserEmail(email: String) {
         dataStore.edit { preferences ->
             preferences[USER_EMAIL] = email
@@ -55,5 +66,6 @@ class UserPreferences(private val context: Context) {
         private val USER_EMAIL = stringPreferencesKey("user_email")
         private val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
         private val LAST_RESET_DATE = stringPreferencesKey("last_reset_date")
+        private val QUICK_NOTES = stringPreferencesKey("quick_notes")
     }
 }

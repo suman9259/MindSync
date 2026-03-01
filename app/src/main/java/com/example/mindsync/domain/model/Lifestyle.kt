@@ -81,6 +81,7 @@ enum class SpecialDateType(val displayName: String, val emoji: String) {
     ANNIVERSARY("Anniversary", "💍"),
     WEDDING("Wedding", "💒"),
     GRADUATION("Graduation", "🎓"),
+    EVENT("Event", "✈️"),
     OTHER("Other", "🎉")
 }
 

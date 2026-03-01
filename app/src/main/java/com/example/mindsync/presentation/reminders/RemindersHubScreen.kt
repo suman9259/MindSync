@@ -46,39 +46,41 @@ fun RemindersHubScreen(
     onNavigateToSleep: () -> Unit = {},
     onNavigateToVehicle: () -> Unit = {},
     onNavigateToScreenTime: () -> Unit = {},
-    onNavigateToPlants: () -> Unit = {}
+    onNavigateToPlants: () -> Unit = {},
+    viewModel: com.example.mindsync.presentation.reminder.ReminderViewModel = org.koin.androidx.compose.koinViewModel()
 ) {
+    val state by viewModel.state.collectAsState()
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("All", "Health", "Personal", "Shopping", "Studies", "Family")
 
     val healthReminders = listOf(
-        ReminderCategory("medicine", "Medicine & Refills", "💊", 4, listOf(Color(0xFF03DAC5), Color(0xFF64FFDA)), "medicine"),
-        ReminderCategory("workout", "Workout", "💪", 3, listOf(Color(0xFF03DAC5), Color(0xFF00C2A8)), "workout"),
-        ReminderCategory("skincare", "Skincare", "✨", 2, listOf(Color(0xFF03DAC5), Color(0xFFBB86FC)), "skincare"),
-        ReminderCategory("water", "Water Intake", "💧", 8, listOf(Color(0xFF03DAC5), Color(0xFF84FFFF)), "water"),
-        ReminderCategory("sleep", "Sleep Tracker", "😴", 1, listOf(Color(0xFFBB86FC), Color(0xFF3700B3)), "sleep")
+        ReminderCategory("medicine", "Medicine & Refills", "💊", state.medicineCount, listOf(Color(0xFF03DAC5), Color(0xFF64FFDA)), "medicine"),
+        ReminderCategory("workout", "Workout", "💪", state.workoutCount, listOf(Color(0xFF03DAC5), Color(0xFF00C2A8)), "workout"),
+        ReminderCategory("skincare", "Skincare", "✨", state.skincareCount, listOf(Color(0xFF03DAC5), Color(0xFFBB86FC)), "skincare"),
+        ReminderCategory("water", "Water Intake", "💧", 0, listOf(Color(0xFF03DAC5), Color(0xFF84FFFF)), "water"),
+        ReminderCategory("sleep", "Sleep Tracker", "😴", 0, listOf(Color(0xFFBB86FC), Color(0xFF3700B3)), "sleep")
     )
 
     val personalReminders = listOf(
-        ReminderCategory("meditation", "Meditation", "🧘", 2, listOf(Color(0xFFBB86FC), Color(0xFF9C27B0)), "meditation"),
-        ReminderCategory("screen_time", "Screen Breaks", "📱", 4, listOf(Color(0xFF03DAC5), Color(0xFFBB86FC)), "screen_time"),
-        ReminderCategory("birthdays", "Birthdays", "🎂", 5, listOf(Color(0xFFFFD54F), Color(0xFFFFC107)), "birthdays"),
-        ReminderCategory("bills", "Bills", "💰", 3, listOf(Color(0xFFFFD54F), Color(0xFF03DAC5)), "bills"),
-        ReminderCategory("vehicle", "Vehicle Care", "🚗", 2, listOf(Color(0xFF03DAC5), Color(0xFF64FFDA)), "vehicle"),
-        ReminderCategory("plants", "Plant Care", "🌱", 5, listOf(Color(0xFF03DAC5), Color(0xFF00C2A8)), "plants")
+        ReminderCategory("meditation", "Meditation", "🧘", state.meditationCount, listOf(Color(0xFFBB86FC), Color(0xFF9C27B0)), "meditation"),
+        ReminderCategory("screen_time", "Screen Breaks", "📱", 0, listOf(Color(0xFF03DAC5), Color(0xFFBB86FC)), "screen_time"),
+        ReminderCategory("birthdays", "Birthdays", "🎂", 0, listOf(Color(0xFFFFD54F), Color(0xFFFFC107)), "birthdays"),
+        ReminderCategory("bills", "Bills", "💰", 0, listOf(Color(0xFFFFD54F), Color(0xFF03DAC5)), "bills"),
+        ReminderCategory("vehicle", "Vehicle Care", "🚗", 0, listOf(Color(0xFF03DAC5), Color(0xFF64FFDA)), "vehicle"),
+        ReminderCategory("plants", "Plant Care", "🌱", 0, listOf(Color(0xFF03DAC5), Color(0xFF00C2A8)), "plants")
     )
 
     val shoppingReminders = listOf(
-        ReminderCategory("grocery", "Grocery List", "🛒", 12, listOf(Color(0xFF03DAC5), Color(0xFF64FFDA)), "grocery")
+        ReminderCategory("grocery", "Grocery List", "🛒", 0, listOf(Color(0xFF03DAC5), Color(0xFF64FFDA)), "grocery")
     )
 
     val studyReminders = listOf(
-        ReminderCategory("assignments", "Assignments", "📚", 4, listOf(Color(0xFFBB86FC), Color(0xFF03DAC5)), "assignments"),
-        ReminderCategory("tests", "Test Revision", "📝", 2, listOf(Color(0xFFBB86FC), Color(0xFF9C27B0)), "tests")
+        ReminderCategory("assignments", "Assignments", "📚", 0, listOf(Color(0xFFBB86FC), Color(0xFF03DAC5)), "assignments"),
+        ReminderCategory("tests", "Test Revision", "📝", 0, listOf(Color(0xFFBB86FC), Color(0xFF9C27B0)), "tests")
     )
 
     val familyReminders = listOf(
-        ReminderCategory("family_medicine", "Family Medicine", "👨‍👩‍👧", 6, listOf(Color(0xFFBB86FC), Color(0xFF03DAC5)), "family")
+        ReminderCategory("family_medicine", "Family Medicine", "👨‍👩‍👧", 0, listOf(Color(0xFFBB86FC), Color(0xFF03DAC5)), "family")
     )
 
     val allCategories = when (selectedTab) {
@@ -131,7 +133,11 @@ fun RemindersHubScreen(
             ) {
                 // Quick Stats
                 item {
-                    QuickStatsCard()
+                    QuickStatsCard(
+                        pendingCount = state.pendingCount,
+                        completedCount = state.completedCount,
+                        upcomingCount = state.upcomingCount
+                    )
                 }
 
                 item {
@@ -176,7 +182,11 @@ fun RemindersHubScreen(
 }
 
 @Composable
-private fun QuickStatsCard() {
+private fun QuickStatsCard(
+    pendingCount: Int,
+    completedCount: Int,
+    upcomingCount: Int
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
@@ -204,9 +214,9 @@ private fun QuickStatsCard() {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    StatItem("Pending", "12", Color.White)
-                    StatItem("Completed", "8", Color.White)
-                    StatItem("Upcoming", "5", Color.White)
+                    StatItem("Pending", "$pendingCount", Color.White)
+                    StatItem("Completed", "$completedCount", Color.White)
+                    StatItem("Upcoming", "$upcomingCount", Color.White)
                 }
             }
         }

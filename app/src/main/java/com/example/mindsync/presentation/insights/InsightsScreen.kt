@@ -38,16 +38,14 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -59,10 +57,17 @@ import kotlinx.coroutines.delay
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InsightsScreen(
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    viewModel: InsightsViewModel = org.koin.androidx.compose.koinViewModel()
 ) {
-    var selectedPeriod by remember { mutableStateOf("Week") }
-    val periods = listOf("Week", "Month", "Year")
+    val state by viewModel.state.collectAsState()
+    val periods = listOf("Today", "Week", "Month", "Year")
+    val selectedPeriod = when (state.selectedPeriod) {
+        ReportPeriod.TODAY -> "Today"
+        ReportPeriod.WEEK -> "Week"
+        ReportPeriod.MONTH -> "Month"
+        ReportPeriod.YEAR -> "Year"
+    }
 
     Scaffold(
         topBar = {
@@ -94,7 +99,16 @@ fun InsightsScreen(
                     periods.forEach { period ->
                         FilterChip(
                             selected = selectedPeriod == period,
-                            onClick = { selectedPeriod = period },
+                            onClick = { 
+                                val reportPeriod = when (period) {
+                                    "Today" -> ReportPeriod.TODAY
+                                    "Week" -> ReportPeriod.WEEK
+                                    "Month" -> ReportPeriod.MONTH
+                                    "Year" -> ReportPeriod.YEAR
+                                    else -> ReportPeriod.TODAY
+                                }
+                                viewModel.selectPeriod(reportPeriod)
+                            },
                             label = { Text(period) },
                             modifier = Modifier.weight(1f)
                         )
@@ -103,7 +117,15 @@ fun InsightsScreen(
             }
 
             item {
-                OverallProgressCard()
+                OverallProgressCard(
+                    medicineProgress = state.medicineProgress,
+                    skincareProgress = state.skincareProgress,
+                    medicinesTaken = state.medicinesTaken,
+                    medicinesTotal = state.medicinesTotal,
+                    skincareCompleted = state.skincareCompleted,
+                    skincareTotal = state.skincareTotal,
+                    currentStreak = maxOf(state.medicineStreak, state.skincareStreak)
+                )
             }
 
             item {
@@ -120,20 +142,27 @@ fun InsightsScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     ActivitySummaryCard(
-                        title = "Meditation",
-                        value = "12",
-                        unit = "sessions",
+                        title = "Medicine",
+                        value = "${state.medicinesTaken}/${state.medicinesTotal}",
+                        unit = "taken today",
                         color = Color(0xFF667eea),
                         modifier = Modifier.weight(1f)
                     )
                     ActivitySummaryCard(
-                        title = "Workout",
-                        value = "8",
-                        unit = "sessions",
+                        title = "Skincare",
+                        value = "${state.skincareCompleted}/${state.skincareTotal}",
+                        unit = "completed",
                         color = Color(0xFFf093fb),
                         modifier = Modifier.weight(1f)
                     )
                 }
+            }
+
+            item {
+                ProgressReportCard(
+                    report = state.progressReport,
+                    periodLabel = selectedPeriod
+                )
             }
 
             item {
@@ -149,7 +178,7 @@ fun InsightsScreen(
             }
 
             item {
-                AchievementsRow()
+                AchievementsRow(achievements = state.achievements)
             }
 
             item {
@@ -161,11 +190,20 @@ fun InsightsScreen(
             }
 
             item {
-                StreaksCard()
+                StreaksCard(
+                    currentStreak = maxOf(state.medicineStreak, state.skincareStreak),
+                    longestStreak = maxOf(state.longestMedicineStreak, state.longestSkincareStreak),
+                    totalDays = state.totalActiveDays
+                )
             }
 
             item {
-                GoalsProgressCard()
+                GoalsProgressCard(
+                    medicinesTaken = state.medicinesTaken,
+                    medicinesTotal = state.medicinesTotal,
+                    skincareCompleted = state.skincareCompleted,
+                    skincareTotal = state.skincareTotal
+                )
             }
 
             item {
@@ -208,17 +246,25 @@ fun InsightsScreen(
 }
 
 @Composable
-private fun OverallProgressCard() {
+private fun OverallProgressCard(
+    medicineProgress: Float,
+    skincareProgress: Float,
+    medicinesTaken: Int,
+    medicinesTotal: Int,
+    skincareCompleted: Int,
+    skincareTotal: Int,
+    currentStreak: Int
+) {
     var animationPlayed by remember { mutableStateOf(false) }
-    val meditationProgress by animateFloatAsState(
-        targetValue = if (animationPlayed) 0.75f else 0f,
+    val animatedMedicineProgress by animateFloatAsState(
+        targetValue = if (animationPlayed) medicineProgress else 0f,
         animationSpec = tween(1000),
-        label = "meditationProgress"
+        label = "medicineProgress"
     )
-    val workoutProgress by animateFloatAsState(
-        targetValue = if (animationPlayed) 0.60f else 0f,
+    val animatedSkincareProgress by animateFloatAsState(
+        targetValue = if (animationPlayed) skincareProgress else 0f,
         animationSpec = tween(1000),
-        label = "workoutProgress"
+        label = "skincareProgress"
     )
 
     LaunchedEffect(Unit) {
@@ -243,7 +289,7 @@ private fun OverallProgressCard() {
         ) {
             Column {
                 Text(
-                    text = "Your Progress This Week",
+                    text = "Your Progress Today",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -256,15 +302,15 @@ private fun OverallProgressCard() {
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     CircularProgressWithLabel(
-                        progress = meditationProgress,
-                        label = "Meditation",
-                        value = "75%",
+                        progress = animatedMedicineProgress,
+                        label = "Medicine",
+                        value = "${(medicineProgress * 100).toInt()}%",
                         color = Color(0xFF38ef7d)
                     )
                     CircularProgressWithLabel(
-                        progress = workoutProgress,
-                        label = "Workout",
-                        value = "60%",
+                        progress = animatedSkincareProgress,
+                        label = "Skincare",
+                        value = "${(skincareProgress * 100).toInt()}%",
                         color = Color(0xFFf5576c)
                     )
                 }
@@ -275,9 +321,9 @@ private fun OverallProgressCard() {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    StatItem("5h 30m", "Total Time")
-                    StatItem("15", "Sessions")
-                    StatItem("7", "Day Streak")
+                    StatItem("$medicinesTaken/$medicinesTotal", "Medicines")
+                    StatItem("$skincareCompleted/$skincareTotal", "Routines")
+                    StatItem("$currentStreak", "Day Streak")
                 }
             }
         }
@@ -492,20 +538,20 @@ private fun LegendItem(color: Color, label: String) {
 }
 
 @Composable
-private fun AchievementsRow() {
-    val achievements = listOf(
-        Achievement("🔥", "7 Day Streak", true),
-        Achievement("🧘", "First Meditation", true),
-        Achievement("💪", "10 Workouts", true),
-        Achievement("⭐", "30 Day Streak", false),
-        Achievement("🏆", "100 Sessions", false)
-    )
-
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(achievements) { achievement ->
-            AchievementCard(achievement)
+private fun AchievementsRow(achievements: List<Achievement>) {
+    if (achievements.isEmpty()) {
+        Text(
+            text = "Complete tasks to unlock achievements!",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    } else {
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(achievements) { achievement ->
+                AchievementCard(achievement)
+            }
         }
     }
 }
@@ -547,7 +593,11 @@ private fun AchievementCard(achievement: Achievement) {
 }
 
 @Composable
-private fun StreaksCard() {
+private fun StreaksCard(
+    currentStreak: Int,
+    longestStreak: Int,
+    totalDays: Int
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp)
@@ -560,17 +610,17 @@ private fun StreaksCard() {
         ) {
             StreakItem(
                 emoji = "🔥",
-                value = "7",
+                value = "$currentStreak",
                 label = "Current Streak"
             )
             StreakItem(
                 emoji = "🏆",
-                value = "15",
+                value = "$longestStreak",
                 label = "Longest Streak"
             )
             StreakItem(
                 emoji = "📅",
-                value = "42",
+                value = "$totalDays",
                 label = "Total Days"
             )
         }
@@ -595,7 +645,12 @@ private fun StreakItem(emoji: String, value: String, label: String) {
 }
 
 @Composable
-private fun GoalsProgressCard() {
+private fun GoalsProgressCard(
+    medicinesTaken: Int,
+    medicinesTotal: Int,
+    skincareCompleted: Int,
+    skincareTotal: Int
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp)
@@ -604,36 +659,40 @@ private fun GoalsProgressCard() {
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Weekly Goals",
+                text = "Today's Goals",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            if (medicinesTotal > 0) {
+                GoalProgressItem(
+                    title = "Take all medicines",
+                    progress = if (medicinesTotal > 0) medicinesTaken.toFloat() / medicinesTotal else 0f,
+                    current = medicinesTaken,
+                    target = medicinesTotal
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
+            if (skincareTotal > 0) {
+                GoalProgressItem(
+                    title = "Complete skincare routines",
+                    progress = if (skincareTotal > 0) skincareCompleted.toFloat() / skincareTotal else 0f,
+                    current = skincareCompleted,
+                    target = skincareTotal
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
+            val totalTasks = medicinesTotal + skincareTotal
+            val completedTasks = medicinesTaken + skincareCompleted
             GoalProgressItem(
-                title = "Meditate 5x per week",
-                progress = 0.8f,
-                current = 4,
-                target = 5
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            GoalProgressItem(
-                title = "Workout 3x per week",
-                progress = 0.66f,
-                current = 2,
-                target = 3
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            GoalProgressItem(
-                title = "Total mindful minutes: 60",
-                progress = 0.5f,
-                current = 30,
-                target = 60
+                title = "Complete all daily tasks",
+                progress = if (totalTasks > 0) completedTasks.toFloat() / totalTasks else 0f,
+                current = completedTasks,
+                target = totalTasks
             )
         }
     }
@@ -732,8 +791,100 @@ private fun HealthMetricCard(
     }
 }
 
-private data class Achievement(
-    val emoji: String,
-    val title: String,
-    val unlocked: Boolean
-)
+@Composable
+private fun ProgressReportCard(
+    report: ProgressReport,
+    periodLabel: String
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(Color(0xFF667eea), Color(0xFF764ba2))
+                    )
+                )
+                .padding(20.dp)
+        ) {
+            Column {
+                Text(
+                    text = "📊 $periodLabel Progress Report",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    ReportStatItem(
+                        label = "Completion",
+                        value = "${(report.completionRate * 100).toInt()}%",
+                        color = Color.White
+                    )
+                    ReportStatItem(
+                        label = "Tasks Done",
+                        value = "${report.totalCompleted}",
+                        color = Color.White
+                    )
+                    ReportStatItem(
+                        label = "Days Tracked",
+                        value = "${report.daysTracked}",
+                        color = Color.White
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    ReportStatItem(
+                        label = "Medicines",
+                        value = "${report.medicinesTaken}/${report.medicinesTotal}",
+                        color = Color.White
+                    )
+                    ReportStatItem(
+                        label = "Skincare",
+                        value = "${report.skincareCompleted}/${report.skincareTotal}",
+                        color = Color.White
+                    )
+                    ReportStatItem(
+                        label = "Workouts",
+                        value = "${report.workoutsCompleted}",
+                        color = Color.White
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ReportStatItem(
+    label: String,
+    value: String,
+    color: Color
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = value,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = color
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = color.copy(alpha = 0.8f)
+        )
+    }
+}

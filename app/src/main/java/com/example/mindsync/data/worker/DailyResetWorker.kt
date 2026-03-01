@@ -56,9 +56,10 @@ class DailyResetWorker(
             }
             val yesterdayString = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(yesterday.time)
 
-            // Get all unique user IDs from medicines
+            // Get all unique user IDs from medicines and skincare
             val medicines = medicineDao.getUnsyncedMedicines()
-            val userIds = medicines.map { it.userId }.distinct()
+            val skincareRoutines = skincareDao.getUnsyncedRoutines()
+            val userIds = (medicines.map { it.userId } + skincareRoutines.map { it.userId }).distinct()
 
             for (userId in userIds) {
                 // Save yesterday's progress before resetting
@@ -102,10 +103,11 @@ class DailyResetWorker(
 
             // Get skincare stats
             val skincareCompleted = skincareDao.getCompletedTodayCount(userId)
+            val skincareTotal = skincareDao.getRoutineCount(userId)
 
             // Calculate totals
             val totalCompleted = medicinesTaken + skincareCompleted
-            val totalTasks = medicinesTotal + 2 // Assuming 2 skincare routines (morning/evening)
+            val totalTasks = medicinesTotal + skincareTotal
 
             val progress = DailyProgressEntity(
                 id = progressId,
@@ -115,7 +117,7 @@ class DailyResetWorker(
                 medicinesTaken = medicinesTaken,
                 medicinesTotal = medicinesTotal,
                 skincareRoutinesCompleted = skincareCompleted,
-                skincareRoutinesTotal = 2,
+                skincareRoutinesTotal = skincareTotal,
                 totalTasksCompleted = totalCompleted,
                 totalTasks = totalTasks
             )

@@ -50,6 +50,12 @@ interface ReminderDao {
 
     @Query("UPDATE reminders SET isEnabled = :enabled WHERE id = :id")
     suspend fun toggleReminder(id: String, enabled: Boolean)
+    
+    @Query("UPDATE reminders SET isEnabled = :enabled WHERE id = :id")
+    suspend fun updateReminderEnabled(id: String, enabled: Boolean)
+    
+    @Query("DELETE FROM reminders WHERE id = :id")
+    suspend fun deleteReminder(id: String)
 
     @Query("DELETE FROM reminders WHERE userId = :userId")
     suspend fun deleteAllForUser(userId: String)

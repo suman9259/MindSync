@@ -57,6 +57,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -84,47 +85,24 @@ data class ReminderItem(
 @Composable
 fun ReminderListScreen(
     onNavigateBack: () -> Unit,
-    onAddReminder: (ReminderType) -> Unit
+    onAddReminder: (ReminderType) -> Unit,
+    viewModel: ReminderViewModel = org.koin.androidx.compose.koinViewModel()
 ) {
+    val state by viewModel.state.collectAsState()
     var selectedFilter by remember { mutableStateOf<ReminderType?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    val reminders = remember {
-        mutableStateListOf(
-            ReminderItem(
-                id = "1",
-                title = "Morning Meditation",
-                time = System.currentTimeMillis() + 3600000,
-                type = ReminderType.MEDITATION,
-                isEnabled = true,
-                repeatDays = "Daily",
-                notes = "Start the day mindfully"
-            ),
-            ReminderItem(
-                id = "2",
-                title = "Gym Session",
-                time = System.currentTimeMillis() + 7200000,
-                type = ReminderType.WORKOUT,
-                isEnabled = true,
-                repeatDays = "Mon, Wed, Fri"
-            ),
-            ReminderItem(
-                id = "3",
-                title = "Evening Relaxation",
-                time = System.currentTimeMillis() + 36000000,
-                type = ReminderType.MEDITATION,
-                isEnabled = false,
-                repeatDays = "Daily"
-            ),
-            ReminderItem(
-                id = "4",
-                title = "Leg Day",
-                time = System.currentTimeMillis() + 86400000,
-                type = ReminderType.WORKOUT,
-                isEnabled = true,
-                repeatDays = "Tue, Thu"
-            )
+    // Convert ReminderEntity to ReminderItem for display
+    val reminders = state.reminders.map { entity ->
+        ReminderItem(
+            id = entity.id,
+            title = entity.title,
+            time = entity.scheduledTime,
+            type = try { ReminderType.valueOf(entity.type.uppercase()) } catch (e: Exception) { ReminderType.GENERAL },
+            isEnabled = entity.isEnabled,
+            repeatDays = entity.repeatDays,
+            notes = entity.notes
         )
     }
 
@@ -203,13 +181,10 @@ fun ReminderListScreen(
                         SwipeableReminderCard(
                             reminder = reminder,
                             onToggle = { enabled ->
-                                val index = reminders.indexOfFirst { it.id == reminder.id }
-                                if (index != -1) {
-                                    reminders[index] = reminder.copy(isEnabled = enabled)
-                                }
+                                viewModel.toggleReminder(reminder.id, enabled)
                             },
                             onDelete = {
-                                reminders.remove(reminder)
+                                viewModel.deleteReminder(reminder.id)
                                 scope.launch {
                                     snackbarHostState.showSnackbar("Reminder deleted")
                                 }

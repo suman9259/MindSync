@@ -32,83 +32,14 @@ import java.util.*
 fun MedicineScreen(
     onNavigateBack: () -> Unit = {},
     onNavigateToAddMedicine: () -> Unit = {},
-    onNavigateToMedicineDetail: (String) -> Unit = {}
+    onNavigateToMedicineDetail: (String) -> Unit = {},
+    viewModel: MedicineViewModel = org.koin.androidx.compose.koinViewModel()
 ) {
+    val state by viewModel.state.collectAsState()
+    val medicines = state.medicines
+    
     var selectedFilter by remember { mutableStateOf("All") }
     val filters = listOf("All", "Morning", "Afternoon", "Evening", "Night")
-    
-    var medicines by remember {
-        mutableStateOf(
-            listOf(
-                Medicine(
-                    name = "Vitamin D3",
-                    description = "Essential for bone health, immune function, and mood regulation. Best absorbed with fatty foods.",
-                    dosage = "1000 IU",
-                    unit = MedicineUnit.TABLET,
-                    frequency = MedicineFrequency.DAILY,
-                    timesPerDay = 1,
-                    reminderEnabled = true,
-                    takenToday = true,
-                    currentStreak = 15
-                ),
-                Medicine(
-                    name = "Omega-3 Fish Oil",
-                    description = "Supports heart, brain, and joint health. Contains EPA and DHA fatty acids.",
-                    dosage = "1000mg",
-                    unit = MedicineUnit.CAPSULE,
-                    frequency = MedicineFrequency.DAILY,
-                    timesPerDay = 2,
-                    reminderEnabled = true,
-                    takenToday = false,
-                    currentStreak = 7
-                ),
-                Medicine(
-                    name = "Multivitamin",
-                    description = "Complete daily nutrition with essential vitamins A, C, D, E, K and B-complex.",
-                    dosage = "1",
-                    unit = MedicineUnit.TABLET,
-                    frequency = MedicineFrequency.DAILY,
-                    timesPerDay = 1,
-                    reminderEnabled = true,
-                    takenToday = false,
-                    currentStreak = 30
-                ),
-                Medicine(
-                    name = "Probiotic",
-                    description = "Supports gut health with 10 billion CFU of beneficial bacteria strains.",
-                    dosage = "10 billion CFU",
-                    unit = MedicineUnit.CAPSULE,
-                    frequency = MedicineFrequency.DAILY,
-                    timesPerDay = 1,
-                    reminderEnabled = true,
-                    takenToday = true,
-                    currentStreak = 12
-                ),
-                Medicine(
-                    name = "Magnesium Glycinate",
-                    description = "Supports muscle relaxation, sleep quality, and stress management. Highly bioavailable form.",
-                    dosage = "400mg",
-                    unit = MedicineUnit.CAPSULE,
-                    frequency = MedicineFrequency.DAILY,
-                    timesPerDay = 1,
-                    reminderEnabled = true,
-                    takenToday = false,
-                    currentStreak = 8
-                ),
-                Medicine(
-                    name = "Vitamin B12",
-                    description = "Essential for energy production, nerve function, and red blood cell formation.",
-                    dosage = "1000mcg",
-                    unit = MedicineUnit.TABLET,
-                    frequency = MedicineFrequency.DAILY,
-                    timesPerDay = 1,
-                    reminderEnabled = true,
-                    takenToday = false,
-                    currentStreak = 5
-                )
-            )
-        )
-    }
     
     var showDeleteDialog by remember { mutableStateOf(false) }
     var medicineToDelete by remember { mutableStateOf<Medicine?>(null) }
@@ -123,23 +54,25 @@ fun MedicineScreen(
             title = { Text("🔔 Reminder Settings") },
             text = {
                 Column {
-                    Text("All reminders are enabled for your medicines.")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    medicines.forEach { med ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(med.name, style = MaterialTheme.typography.bodyMedium)
-                            Switch(
-                                checked = med.reminderEnabled,
-                                onCheckedChange = { enabled ->
-                                    medicines = medicines.map { 
-                                        if (it.id == med.id) it.copy(reminderEnabled = enabled) else it 
+                    if (medicines.isEmpty()) {
+                        Text("No medicines added yet.")
+                    } else {
+                        Text("Manage reminders for your medicines.")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        medicines.forEach { med ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(med.name, style = MaterialTheme.typography.bodyMedium)
+                                Switch(
+                                    checked = med.reminderEnabled,
+                                    onCheckedChange = { enabled ->
+                                        viewModel.toggleReminder(med.id, enabled)
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
                     }
                 }
@@ -156,6 +89,8 @@ fun MedicineScreen(
     if (showEditDialog && medicineToEdit != null) {
         var editName by remember { mutableStateOf(medicineToEdit!!.name) }
         var editDosage by remember { mutableStateOf(medicineToEdit!!.dosage) }
+        var editDescription by remember { mutableStateOf(medicineToEdit!!.description) }
+        var editInstructions by remember { mutableStateOf(medicineToEdit!!.instructions) }
         
         AlertDialog(
             onDismissRequest = { showEditDialog = false; medicineToEdit = null },
@@ -175,13 +110,36 @@ fun MedicineScreen(
                         label = { Text("Dosage") },
                         modifier = Modifier.fillMaxWidth()
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = editDescription,
+                        onValueChange = { editDescription = it },
+                        label = { Text("Description") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = editInstructions,
+                        onValueChange = { editInstructions = it },
+                        label = { Text("Instructions") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        medicines = medicines.map {
-                            if (it.id == medicineToEdit?.id) it.copy(name = editName, dosage = editDosage) else it
+                        medicineToEdit?.let { med ->
+                            viewModel.updateMedicine(
+                                id = med.id,
+                                name = editName,
+                                description = editDescription,
+                                dosage = editDosage,
+                                unit = med.unit,
+                                frequency = med.frequency,
+                                instructions = editInstructions,
+                                reminderEnabled = med.reminderEnabled
+                            )
                         }
                         showEditDialog = false
                         medicineToEdit = null
@@ -206,7 +164,7 @@ fun MedicineScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        medicines = medicines.filter { it.id != medicineToDelete?.id }
+                        medicineToDelete?.let { viewModel.deleteMedicine(it.id) }
                         showDeleteDialog = false
                         medicineToDelete = null
                     }
@@ -296,9 +254,9 @@ fun MedicineScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
-                                StatItem("Taken", "2", Color.White)
-                                StatItem("Pending", "2", Color.White)
-                                StatItem("Streak", "15 days", Color.White)
+                                StatItem("Taken", "${state.takenCount}", Color.White)
+                                StatItem("Pending", "${state.pendingCount}", Color.White)
+                                StatItem("Streak", "${state.maxStreak} days", Color.White)
                             }
                         }
                     }
@@ -331,13 +289,42 @@ fun MedicineScreen(
                 )
             }
             
+            if (medicines.isEmpty()) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = cardBackground)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(32.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text("💊", style = MaterialTheme.typography.displayMedium)
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                "No medicines added yet",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White
+                            )
+                            Text(
+                                "Tap the button below to add your first medicine",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White.copy(alpha = 0.7f)
+                            )
+                        }
+                    }
+                }
+            }
+            
             items(medicines) { medicine ->
                 MedicineCard(
                     medicine = medicine,
                     onToggleTaken = {
-                        medicines = medicines.map {
-                            if (it.id == medicine.id) it.copy(takenToday = !it.takenToday) else it
-                        }
+                        viewModel.toggleMedicineTaken(medicine.id)
                     },
                     onClick = { onNavigateToMedicineDetail(medicine.id) },
                     onEdit = {

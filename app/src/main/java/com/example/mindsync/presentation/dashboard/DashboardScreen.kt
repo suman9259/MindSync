@@ -25,14 +25,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import java.text.SimpleDateFormat
 import java.util.*
 
-data class UpcomingReminder(
-    val id: String = UUID.randomUUID().toString(),
-    val emoji: String,
-    val title: String,
-    val time: String,
-    val category: String,
-    val priority: Int = 0 // lower = higher priority
-)
 
 @Composable
 fun DashboardScreen(
@@ -47,6 +39,7 @@ fun DashboardScreen(
     onNavigateToAssignments: () -> Unit = {},
     onNavigateToFamily: () -> Unit = {},
     onNavigateToInsights: () -> Unit = {},
+    onNavigateToWaterIntake: () -> Unit = {},
     viewModel: DashboardViewModel = org.koin.androidx.compose.koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -60,20 +53,14 @@ fun DashboardScreen(
     // Quick Notes state
     var quickNote by remember { mutableStateOf("") }
     var showNoteInput by remember { mutableStateOf(false) }
-    var savedNotes by remember { mutableStateOf(listOf<String>()) }
+    val savedNotes = state.quickNotes
     
-    // Upcoming reminders with real-ish data based on time
-    val upcomingReminders = remember {
-        val calendar = Calendar.getInstance()
-        val hour = calendar.get(Calendar.HOUR_OF_DAY)
-        mutableStateListOf(
-            UpcomingReminder("1", "💊", "Vitamin D3", "8:00 AM", "medicine", if (hour < 8) 0 else 5),
-            UpcomingReminder("2", "💧", "Drink Water", "Every 2 hours", "water", 1),
-            UpcomingReminder("3", "🧘", "Morning Meditation", "9:00 AM", "meditation", if (hour < 9) 0 else 5),
-            UpcomingReminder("4", "💪", "Workout Session", "6:00 PM", "workout", if (hour < 18) 2 else 5),
-            UpcomingReminder("5", "✨", "Evening Skincare", "9:00 PM", "skincare", if (hour < 21) 3 else 5)
-        ).sortedBy { it.priority }
-    }
+    // Get upcoming tasks from state (real data from database)
+    val upcomingTasks = state.upcomingTasks
+    
+    // Expandable state for upcoming tasks
+    var showAllTasks by remember { mutableStateOf(false) }
+    val displayedTasks = if (showAllTasks) upcomingTasks else upcomingTasks.take(3)
     
     // Use real progress from state (daily progress that resets each day)
     val totalTasks = if (state.totalSteps > 0) state.totalSteps else 5
@@ -216,13 +203,13 @@ fun DashboardScreen(
                         onToggleInput = { showNoteInput = !showNoteInput },
                         onSaveNote = {
                             if (quickNote.isNotBlank()) {
-                                savedNotes = savedNotes + quickNote
+                                viewModel.processIntent(DashboardIntent.AddQuickNote(quickNote))
                                 quickNote = ""
                                 showNoteInput = false
                             }
                         },
                         onDeleteNote = { index ->
-                            savedNotes = savedNotes.filterIndexed { i, _ -> i != index }
+                            viewModel.processIntent(DashboardIntent.DeleteQuickNote(index))
                         }
                     )
                 }
@@ -244,22 +231,38 @@ fun DashboardScreen(
                 
                 // Upcoming Reminders
                 item {
-                    Text(
-                        "⏰ Upcoming",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "⏰ Upcoming",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        if (upcomingTasks.size > 3) {
+                            TextButton(onClick = { showAllTasks = !showAllTasks }) {
+                                Text(
+                                    if (showAllTasks) "See Less" else "See All (${upcomingTasks.size})",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color(0xFF03DAC5)
+                                )
+                            }
+                        }
+                    }
                 }
                 
-                items(upcomingReminders.take(3)) { reminder ->
-                    UpcomingReminderRow(
-                        reminder = reminder,
+                items(displayedTasks) { task ->
+                    UpcomingTaskRow(
+                        task = task,
                         onClick = {
-                            when (reminder.category) {
+                            when (task.category) {
                                 "medicine" -> onNavigateToMedicine()
                                 "meditation" -> onNavigateToMeditation()
                                 "workout" -> onNavigateToWorkout()
                                 "skincare" -> onNavigateToSkincare()
+                                "water" -> onNavigateToWaterIntake()
                                 else -> onNavigateToRemindersHub()
                             }
                         }
@@ -314,8 +317,8 @@ private fun SetReminderButton(onClick: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun UpcomingReminderRow(
-    reminder: UpcomingReminder,
+private fun UpcomingTaskRow(
+    task: UpcomingTask,
     onClick: () -> Unit
 ) {
     Card(
@@ -331,16 +334,16 @@ private fun UpcomingReminderRow(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(reminder.emoji, style = MaterialTheme.typography.titleLarge)
+            Text(task.emoji, style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    reminder.title,
+                    task.title,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium
                 )
                 Text(
-                    reminder.time,
+                    task.time,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

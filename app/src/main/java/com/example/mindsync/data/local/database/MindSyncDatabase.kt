@@ -10,6 +10,7 @@ import com.example.mindsync.data.local.database.dao.MeditationDao
 import com.example.mindsync.data.local.database.dao.MedicineDao
 import com.example.mindsync.data.local.database.dao.ReminderDao
 import com.example.mindsync.data.local.database.dao.SkincareDao
+import com.example.mindsync.data.local.database.dao.SpecialDateDao
 import com.example.mindsync.data.local.database.dao.WorkoutDao
 import com.example.mindsync.data.local.database.entity.ExerciseEntity
 import com.example.mindsync.data.local.database.entity.MeditationEntity
@@ -18,6 +19,7 @@ import com.example.mindsync.data.local.database.entity.ReminderEntity
 import com.example.mindsync.data.local.database.entity.DailyProgressEntity
 import com.example.mindsync.data.local.database.entity.SkincareRoutineEntity
 import com.example.mindsync.data.local.database.entity.SkincareStepEntity
+import com.example.mindsync.data.local.database.entity.SpecialDateEntity
 import com.example.mindsync.data.local.database.entity.WorkoutEntity
 import com.example.mindsync.data.local.database.converter.Converters
 import com.example.mindsync.data.local.security.SecurePreferences
@@ -34,9 +36,10 @@ import java.security.SecureRandom
         MedicineEntity::class,
         SkincareRoutineEntity::class,
         SkincareStepEntity::class,
-        DailyProgressEntity::class
+        DailyProgressEntity::class,
+        SpecialDateEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -48,6 +51,7 @@ abstract class MindSyncDatabase : RoomDatabase() {
     abstract fun medicineDao(): MedicineDao
     abstract fun skincareDao(): SkincareDao
     abstract fun dailyProgressDao(): DailyProgressDao
+    abstract fun specialDateDao(): SpecialDateDao
 
     companion object {
         private const val DATABASE_NAME = "mindsync_encrypted.db"

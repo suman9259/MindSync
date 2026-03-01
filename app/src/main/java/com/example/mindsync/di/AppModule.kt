@@ -49,6 +49,7 @@ val appModule = module {
     single { get<MindSyncDatabase>().medicineDao() }
     single { get<MindSyncDatabase>().skincareDao() }
     single { get<MindSyncDatabase>().dailyProgressDao() }
+    single { get<MindSyncDatabase>().specialDateDao() }
     
     // Local (Legacy - kept for compatibility)
     single { UserPreferences(androidContext()) }
@@ -78,7 +79,12 @@ val appModule = module {
     // ViewModels
     viewModel { SplashViewModel(get()) }
     viewModel { AuthViewModel(get()) }
-    viewModel { DashboardViewModel(get(), get()) }
+    viewModel { DashboardViewModel(get(), get(), get(), get(), get()) }
     viewModel { MeditationViewModel(get(), get(), get(), get()) }
     viewModel { WorkoutViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { com.example.mindsync.presentation.medicine.MedicineViewModel(get()) }
+    viewModel { com.example.mindsync.presentation.skincare.SkincareViewModel(get()) }
+    viewModel { com.example.mindsync.presentation.insights.InsightsViewModel(get(), get(), get()) }
+    viewModel { com.example.mindsync.presentation.reminder.ReminderViewModel(get(), get(), get()) }
+    viewModel { com.example.mindsync.presentation.lifestyle.BirthdaysViewModel(get()) }
 }

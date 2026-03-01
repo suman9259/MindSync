@@ -86,6 +86,9 @@ interface SkincareDao {
     @Query("SELECT COUNT(*) FROM skincare_routines WHERE userId = :userId AND completedToday = 1")
     suspend fun getCompletedTodayCount(userId: String): Int
 
+    @Query("SELECT COUNT(*) FROM skincare_routines WHERE userId = :userId")
+    suspend fun getRoutineCount(userId: String): Int
+
     @Query("DELETE FROM skincare_routines WHERE userId = :userId")
     suspend fun deleteAllForUser(userId: String)
 

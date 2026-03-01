@@ -20,7 +20,8 @@ import com.example.mindsync.domain.model.MedicineUnit
 @Composable
 fun AddMedicineScreen(
     onNavigateBack: () -> Unit = {},
-    onSave: () -> Unit = {}
+    onSave: () -> Unit = {},
+    viewModel: MedicineViewModel = org.koin.androidx.compose.koinViewModel()
 ) {
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -31,6 +32,11 @@ fun AddMedicineScreen(
     var reminderEnabled by remember { mutableStateOf(true) }
     var unitExpanded by remember { mutableStateOf(false) }
     var frequencyExpanded by remember { mutableStateOf(false) }
+    var timesPerDay by remember { mutableStateOf(1) }
+    
+    // Time picker state
+    var showTimePicker by remember { mutableStateOf(false) }
+    var scheduledTimes by remember { mutableStateOf(listOf<Long>()) }
 
     Scaffold(
         topBar = {
@@ -44,6 +50,17 @@ fun AddMedicineScreen(
                 actions = {
                     TextButton(
                         onClick = {
+                            viewModel.addMedicine(
+                                name = name,
+                                description = description,
+                                dosage = dosage,
+                                unit = selectedUnit,
+                                frequency = selectedFrequency,
+                                timesPerDay = timesPerDay,
+                                scheduledTimes = scheduledTimes,
+                                instructions = instructions,
+                                reminderEnabled = reminderEnabled
+                            )
                             onSave()
                             onNavigateBack()
                         },
@@ -237,6 +254,166 @@ fun AddMedicineScreen(
                         )
                     )
                 }
+            }
+            
+            // Schedule Time Section
+            if (reminderEnabled) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Default.Schedule,
+                                contentDescription = null,
+                                tint = Color(0xFF03DAC5)
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                "Schedule Time",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(12.dp))
+                        
+                        // Time slots
+                        if (scheduledTimes.isEmpty()) {
+                            Text(
+                                "No time scheduled. Add a reminder time below.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        } else {
+                            scheduledTimes.forEachIndexed { index, time ->
+                                val timeFormat = java.text.SimpleDateFormat("h:mm a", java.util.Locale.getDefault())
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        "⏰ ${timeFormat.format(java.util.Date(time))}",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                    IconButton(
+                                        onClick = {
+                                            scheduledTimes = scheduledTimes.filterIndexed { i, _ -> i != index }
+                                        }
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Close,
+                                            contentDescription = "Remove time",
+                                            tint = Color.Gray,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        // Add time button
+                        OutlinedButton(
+                            onClick = { showTimePicker = true },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Add Reminder Time")
+                        }
+                    }
+                }
+            }
+            
+            // Time Picker Dialog
+            if (showTimePicker) {
+                var selectedHour by remember { mutableStateOf(8) }
+                var selectedMinute by remember { mutableStateOf(0) }
+                
+                AlertDialog(
+                    onDismissRequest = { showTimePicker = false },
+                    title = { Text("Select Time") },
+                    text = {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                // Hour picker
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    IconButton(onClick = { selectedHour = (selectedHour + 1) % 24 }) {
+                                        Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Increase hour")
+                                    }
+                                    Text(
+                                        String.format("%02d", selectedHour),
+                                        style = MaterialTheme.typography.headlineMedium
+                                    )
+                                    IconButton(onClick = { selectedHour = if (selectedHour > 0) selectedHour - 1 else 23 }) {
+                                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Decrease hour")
+                                    }
+                                }
+                                
+                                Text(":", style = MaterialTheme.typography.headlineMedium)
+                                
+                                // Minute picker
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    IconButton(onClick = { selectedMinute = (selectedMinute + 5) % 60 }) {
+                                        Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Increase minute")
+                                    }
+                                    Text(
+                                        String.format("%02d", selectedMinute),
+                                        style = MaterialTheme.typography.headlineMedium
+                                    )
+                                    IconButton(onClick = { selectedMinute = if (selectedMinute >= 5) selectedMinute - 5 else 55 }) {
+                                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Decrease minute")
+                                    }
+                                }
+                            }
+                            
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                if (selectedHour < 12) "AM" else "PM",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                // Create timestamp for today with selected time
+                                val calendar = java.util.Calendar.getInstance()
+                                calendar.set(java.util.Calendar.HOUR_OF_DAY, selectedHour)
+                                calendar.set(java.util.Calendar.MINUTE, selectedMinute)
+                                calendar.set(java.util.Calendar.SECOND, 0)
+                                calendar.set(java.util.Calendar.MILLISECOND, 0)
+                                scheduledTimes = scheduledTimes + calendar.timeInMillis
+                                showTimePicker = false
+                            }
+                        ) {
+                            Text("Add")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showTimePicker = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
             }
 
             // Popular Supplements Section

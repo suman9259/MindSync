@@ -139,6 +139,12 @@ fun MindSyncNavGraph(
                 },
                 onNavigateToFamily = {
                     navController.navigate(NavRoute.FamilyMedicine.route)
+                },
+                onNavigateToWaterIntake = {
+                    navController.navigate(NavRoute.WaterIntake.route)
+                },
+                onNavigateToInsights = {
+                    navController.navigate(NavRoute.Insights.route)
                 }
             )
         }

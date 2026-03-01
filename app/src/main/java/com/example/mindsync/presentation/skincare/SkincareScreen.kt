@@ -29,77 +29,14 @@ import com.example.mindsync.domain.model.SkincareStep
 fun SkincareScreen(
     onNavigateBack: () -> Unit = {},
     onNavigateToAddSkincare: () -> Unit = {},
-    onNavigateToSkincareDetail: (String) -> Unit = {}
+    onNavigateToSkincareDetail: (String) -> Unit = {},
+    viewModel: SkincareViewModel = org.koin.androidx.compose.koinViewModel()
 ) {
+    val state by viewModel.state.collectAsState()
+    val routines = state.routines
+    
     var selectedFilter by remember { mutableStateOf("All") }
     val filters = listOf("All", "Morning", "Evening", "Weekly")
-    
-    var routines by remember {
-        mutableStateOf(
-            listOf(
-                SkincareRoutine(
-                    name = "Morning Glow",
-                    description = "Start your day with radiant, protected skin using trending ingredients like Vitamin C and Niacinamide",
-                    routineType = SkincareRoutineType.MORNING,
-                    steps = listOf(
-                        SkincareStep(name = "Gentle Cleanser", productName = "CeraVe Hydrating Cleanser", category = SkincareCategory.CLEANSER),
-                        SkincareStep(name = "Hydrating Toner", productName = "Klairs Supple Preparation", category = SkincareCategory.TONER),
-                        SkincareStep(name = "Vitamin C Serum", productName = "Timeless 20% Vitamin C + E + Ferulic", category = SkincareCategory.SERUM),
-                        SkincareStep(name = "Moisturizer", productName = "Neutrogena Hydro Boost", category = SkincareCategory.MOISTURIZER),
-                        SkincareStep(name = "Sunscreen SPF 50", productName = "La Roche-Posay Anthelios", category = SkincareCategory.SUNSCREEN)
-                    ),
-                    estimatedMinutes = 10,
-                    completedToday = true,
-                    currentStreak = 21
-                ),
-                SkincareRoutine(
-                    name = "Evening Repair",
-                    description = "Restore and rejuvenate overnight with retinol and peptides - trending anti-aging ingredients",
-                    routineType = SkincareRoutineType.EVENING,
-                    steps = listOf(
-                        SkincareStep(name = "Oil Cleanser", productName = "DHC Deep Cleansing Oil", category = SkincareCategory.CLEANSER),
-                        SkincareStep(name = "Foam Cleanser", productName = "La Roche-Posay Toleriane", category = SkincareCategory.CLEANSER),
-                        SkincareStep(name = "Toner", productName = "Paula's Choice BHA Exfoliant", category = SkincareCategory.TONER),
-                        SkincareStep(name = "Retinol Serum", productName = "The Ordinary Retinol 0.5%", category = SkincareCategory.SERUM),
-                        SkincareStep(name = "Eye Cream", productName = "CeraVe Eye Repair Cream", category = SkincareCategory.EYE_CREAM),
-                        SkincareStep(name = "Night Cream", productName = "Drunk Elephant Protini", category = SkincareCategory.MOISTURIZER)
-                    ),
-                    estimatedMinutes = 15,
-                    completedToday = false,
-                    currentStreak = 18
-                ),
-                SkincareRoutine(
-                    name = "Weekly Deep Clean",
-                    description = "Exfoliate and mask treatment with AHA/BHA and trending clay masks",
-                    routineType = SkincareRoutineType.WEEKLY,
-                    steps = listOf(
-                        SkincareStep(name = "Chemical Exfoliator", productName = "The Ordinary AHA 30% + BHA 2%", category = SkincareCategory.EXFOLIATOR),
-                        SkincareStep(name = "Clay Mask", productName = "Aztec Secret Indian Healing Clay", category = SkincareCategory.FACE_MASK),
-                        SkincareStep(name = "Hydrating Serum", productName = "The Ordinary Hyaluronic Acid 2%", category = SkincareCategory.SERUM)
-                    ),
-                    estimatedMinutes = 25,
-                    completedToday = false,
-                    currentStreak = 4
-                ),
-                SkincareRoutine(
-                    name = "Glass Skin Routine",
-                    description = "K-Beauty inspired routine for that coveted dewy, luminous complexion",
-                    routineType = SkincareRoutineType.MORNING,
-                    steps = listOf(
-                        SkincareStep(name = "Double Cleanse", productName = "Banila Co Clean It Zero", category = SkincareCategory.CLEANSER),
-                        SkincareStep(name = "Essence", productName = "COSRX Snail Mucin 96%", category = SkincareCategory.TONER),
-                        SkincareStep(name = "Serum Layer 1", productName = "Beauty of Joseon Glow Serum", category = SkincareCategory.SERUM),
-                        SkincareStep(name = "Serum Layer 2", productName = "The Ordinary Niacinamide 10%", category = SkincareCategory.SERUM),
-                        SkincareStep(name = "Moisturizer", productName = "Laneige Water Bank", category = SkincareCategory.MOISTURIZER),
-                        SkincareStep(name = "SPF", productName = "Beauty of Joseon Relief Sun", category = SkincareCategory.SUNSCREEN)
-                    ),
-                    estimatedMinutes = 12,
-                    completedToday = false,
-                    currentStreak = 7
-                )
-            )
-        )
-    }
     
     var showDeleteDialog by remember { mutableStateOf(false) }
     var routineToDelete by remember { mutableStateOf<SkincareRoutine?>(null) }
@@ -134,8 +71,16 @@ fun SkincareScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        routines = routines.map {
-                            if (it.id == routineToEdit?.id) it.copy(name = editName, description = editDescription) else it
+                        routineToEdit?.let { routine ->
+                            viewModel.updateRoutine(
+                                id = routine.id,
+                                name = editName,
+                                description = editDescription,
+                                routineType = routine.routineType,
+                                estimatedMinutes = routine.estimatedMinutes,
+                                scheduledTime = routine.scheduledTime,
+                                reminderEnabled = routine.reminderEnabled
+                            )
                         }
                         showEditDialog = false
                         routineToEdit = null
@@ -167,7 +112,7 @@ fun SkincareScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        routines = routines.filter { it.id != routineToDelete?.id }
+                        routineToDelete?.let { viewModel.deleteRoutine(it.id) }
                         showDeleteDialog = false
                         routineToDelete = null
                     }
@@ -257,9 +202,9 @@ fun SkincareScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
-                                StatItem("Done Today", "1/2", Color.White)
-                                StatItem("Products", "12", Color.White)
-                                StatItem("Streak", "21 days", Color.White)
+                                StatItem("Done Today", "${state.completedTodayCount}/${state.totalRoutinesCount}", Color.White)
+                                StatItem("Products", "${state.totalProductsCount}", Color.White)
+                                StatItem("Streak", "${state.maxStreak} days", Color.White)
                             }
                         }
                     }
@@ -292,6 +237,37 @@ fun SkincareScreen(
                 )
             }
             
+            if (filteredRoutines.isEmpty()) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = cardBackground)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(32.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text("✨", style = MaterialTheme.typography.displayMedium)
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                "No routines added yet",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White
+                            )
+                            Text(
+                                "Tap the button below to create your first skincare routine",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White.copy(alpha = 0.7f)
+                            )
+                        }
+                    }
+                }
+            }
+            
             items(filteredRoutines) { skincareRoutine ->
                 SkincareRoutineCard(
                     routine = skincareRoutine,
@@ -305,6 +281,9 @@ fun SkincareScreen(
                     onDelete = {
                         routineToDelete = skincareRoutine
                         showDeleteDialog = true
+                    },
+                    onStart = {
+                        viewModel.toggleRoutineCompleted(skincareRoutine.id)
                     }
                 )
             }
