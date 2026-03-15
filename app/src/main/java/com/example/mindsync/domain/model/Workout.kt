@@ -43,7 +43,8 @@ data class Exercise(
     val imageUrl: String = "",
     val videoUrl: String = "",
     val isCompleted: Boolean = false,
-    val notes: String = ""
+    val notes: String = "",
+    val isWithWeight: Boolean = true
 )
 
 enum class MuscleGroup(val displayName: String) {

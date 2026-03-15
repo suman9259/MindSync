@@ -59,6 +59,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -81,7 +82,7 @@ fun WorkoutScreen(
     onNavigateToAddWorkout: () -> Unit,
     onNavigateToAddReminder: (String?) -> Unit,
     onNavigateToProgress: () -> Unit,
-    onNavigateToWorkoutDetail: (String) -> Unit = {},
+    onNavigateToWorkoutDetail: (Workout) -> Unit = {},
     onNavigateToLogWorkout: () -> Unit = {},
     viewModel: WorkoutViewModel = koinViewModel()
 ) {
@@ -93,8 +94,8 @@ fun WorkoutScreen(
             when (effect) {
                 is WorkoutEffect.ShowError -> snackbarHostState.showSnackbar(effect.message)
                 is WorkoutEffect.ShowSuccess -> snackbarHostState.showSnackbar(effect.message)
-                is WorkoutEffect.NavigateBack -> onNavigateBack()
-                is WorkoutEffect.NavigateToDetail -> onNavigateToWorkoutDetail(effect.workoutId)
+                is WorkoutEffect.NavigateBack -> { }
+                is WorkoutEffect.NavigateToDetail -> onNavigateToWorkoutDetail(effect.workout)
                 is WorkoutEffect.ReminderScheduled -> { }
             }
         }
@@ -108,24 +109,13 @@ fun WorkoutScreen(
         containerColor = darkBackground,
         topBar = {
             TopAppBar(
-                title = { 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            "Workout",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            style = MaterialTheme.typography.headlineSmall
-                        )
-                        Icon(
-                            Icons.Default.ArrowBack,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier
-                                .padding(start = 4.dp)
-                                .size(16.dp)
-                                .clickable { /* dropdown */ }
-                        )
-                    }
+                title = {
+                    Text(
+                        "Workout",
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        style = MaterialTheme.typography.headlineSmall
+                    )
                 },
                 actions = {
                     // PRO badge
@@ -222,51 +212,26 @@ fun WorkoutScreen(
                     }
                 }
 
-                // New Routine and Explore buttons
+                // New Routine button
                 item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onNavigateToAddWorkout() },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = cardBackground)
                     ) {
-                        Card(
-                            modifier = Modifier
-                                .weight(1f)
-                                .clickable { onNavigateToAddWorkout() },
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = cardBackground)
+                        Row(
+                            modifier = Modifier.padding(14.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(
-                                modifier = Modifier.padding(14.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text("📋", style = MaterialTheme.typography.titleMedium)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    "New Routine",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.White
-                                )
-                            }
-                        }
-                        Card(
-                            modifier = Modifier
-                                .weight(1f)
-                                .clickable { /* explore */ },
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = cardBackground)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(14.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text("🔍", style = MaterialTheme.typography.titleMedium)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    "Explore",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.White
-                                )
-                            }
+                            Text("📋", style = MaterialTheme.typography.titleMedium)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                "New Routine",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White
+                            )
                         }
                     }
                 }
@@ -347,65 +312,77 @@ private fun RoutineCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = cardBackground)
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            // Category color dot
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(tealAccent.copy(alpha = 0.15f)),
+                contentAlignment = Alignment.Center
             ) {
                 Text(
-                    workout.name,
-                    style = MaterialTheme.typography.titleMedium,
+                    text = getCategoryEmoji(workout.category),
+                    style = MaterialTheme.typography.titleSmall
+                )
+            }
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = workout.name,
+                    style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.White
+                    color = Color.White,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
                 Text(
-                    "⋮",
-                    style = MaterialTheme.typography.titleLarge,
+                    text = "${workout.exercises.size} exercises" +
+                        if (workout.durationMinutes > 0) " · ${workout.durationMinutes} min" else "",
+                    style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
             }
-            
-            Spacer(modifier = Modifier.height(4.dp))
-            
-            Text(
-                workout.exercises.take(3).joinToString(", ") { it.name } + 
-                    if (workout.exercises.size > 3) "..." else "",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray,
-                maxLines = 2
-            )
-            
-            Spacer(modifier = Modifier.height(12.dp))
-            
-            // Start Routine Button
-            Card(
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onStart),
-                shape = RoundedCornerShape(8.dp),
-                colors = CardDefaults.cardColors(containerColor = tealAccent)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(tealAccent)
+                    .clickable(onClick = onStart)
+                    .padding(horizontal = 14.dp, vertical = 7.dp)
             ) {
                 Text(
-                    "Start Routine",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.White,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    "Start",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
             }
         }
     }
+}
+
+private fun getCategoryEmoji(category: WorkoutCategory): String = when (category) {
+    WorkoutCategory.STRENGTH -> "🏋️"
+    WorkoutCategory.CARDIO -> "🏃"
+    WorkoutCategory.FLEXIBILITY -> "🧘"
+    WorkoutCategory.HIIT -> "⚡"
+    WorkoutCategory.YOGA -> "🌿"
+    WorkoutCategory.CROSSFIT -> "🔥"
+    WorkoutCategory.BODYWEIGHT -> "💪"
+    WorkoutCategory.POWERLIFTING -> "🎯"
 }
 
 @Composable

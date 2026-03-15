@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.util.Timer
 import kotlin.concurrent.timerTask
+import org.koin.androidx.compose.koinViewModel
 
 data class ExerciseSet(
     val setNumber: Int,
@@ -40,19 +41,22 @@ data class LoggedExercise(
 fun LogWorkoutScreen(
     onNavigateBack: () -> Unit,
     onAddExercise: () -> Unit,
-    onFinish: () -> Unit
+    onFinish: () -> Unit,
+    viewModel: WorkoutViewModel = koinViewModel()
 ) {
     val darkBackground = Color(0xFF0D0D0D)
     val cardBackground = Color(0xFF1A1A1A)
     val blueAccent = Color(0xFF4A90D9)
     val purpleAccent = Color(0xFF6B5CE7)
-    
+
+    val state by viewModel.state.collectAsState()
+    val exercises = state.sessionExercises
+
     var duration by remember { mutableStateOf(0) }
-    var exercises by remember { mutableStateOf(listOf<LoggedExercise>()) }
     var showDiscardDialog by remember { mutableStateOf(false) }
-    
-    // Timer for duration
+
     LaunchedEffect(Unit) {
+        viewModel.processIntent(WorkoutIntent.ClearSession)
         val timer = Timer()
         timer.scheduleAtFixedRate(timerTask {
             duration++
@@ -237,7 +241,7 @@ fun LogWorkoutScreen(
                         ExerciseCard(
                             exercise = exercise,
                             onUpdateSet = { setIndex, kg, reps ->
-                                exercises = exercises.map { ex ->
+                                val updated = exercises.map { ex ->
                                     if (ex.id == exercise.id) {
                                         ex.copy(sets = ex.sets.mapIndexed { index, set ->
                                             if (index == setIndex) set.copy(kg = kg, reps = reps)
@@ -245,9 +249,10 @@ fun LogWorkoutScreen(
                                         }.toMutableList())
                                     } else ex
                                 }
+                                viewModel.processIntent(WorkoutIntent.UpdateSessionExercises(updated))
                             },
                             onToggleComplete = { setIndex ->
-                                exercises = exercises.map { ex ->
+                                val updated = exercises.map { ex ->
                                     if (ex.id == exercise.id) {
                                         ex.copy(sets = ex.sets.mapIndexed { index, set ->
                                             if (index == setIndex) set.copy(isCompleted = !set.isCompleted)
@@ -255,15 +260,17 @@ fun LogWorkoutScreen(
                                         }.toMutableList())
                                     } else ex
                                 }
+                                viewModel.processIntent(WorkoutIntent.UpdateSessionExercises(updated))
                             },
                             onAddSet = {
-                                exercises = exercises.map { ex ->
+                                val updated = exercises.map { ex ->
                                     if (ex.id == exercise.id) {
                                         val newSets = ex.sets.toMutableList()
                                         newSets.add(ExerciseSet(newSets.size + 1))
                                         ex.copy(sets = newSets)
                                     } else ex
                                 }
+                                viewModel.processIntent(WorkoutIntent.UpdateSessionExercises(updated))
                             },
                             cardBackground = cardBackground,
                             blueAccent = blueAccent

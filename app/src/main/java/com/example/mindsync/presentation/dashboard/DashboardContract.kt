@@ -28,7 +28,8 @@ data class DashboardState(
     val quickNotes: List<String> = emptyList(),
     val selectedTab: Int = 0,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val workoutsCompletedToday: List<String> = emptyList()
 ) : MviState
 
 // Intents

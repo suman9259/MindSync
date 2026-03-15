@@ -14,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -62,10 +63,11 @@ fun DashboardScreen(
     var showAllTasks by remember { mutableStateOf(false) }
     val displayedTasks = if (showAllTasks) upcomingTasks else upcomingTasks.take(3)
     
-    // Use real progress from state (daily progress that resets each day)
-    val totalTasks = if (state.totalSteps > 0) state.totalSteps else 5
-    val completedTasks = state.completedTasksCount
-    val realProgress = state.progress
+    // Use real progress from state + completed workouts
+    val workoutsCompleted = state.workoutsCompletedToday.size
+    val totalTasks = (if (state.totalSteps > 0) state.totalSteps else 5) + workoutsCompleted
+    val completedTasks = state.completedTasksCount + workoutsCompleted
+    val realProgress = if (totalTasks > 0) completedTasks.toFloat() / totalTasks else state.progress
 
     if (state.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -229,6 +231,64 @@ fun DashboardScreen(
                     SetReminderButton(onClick = onNavigateToRemindersHub)
                 }
                 
+                // Today's Completed Workouts
+                if (state.workoutsCompletedToday.isNotEmpty()) {
+                    item {
+                        Text(
+                            "✅ Today's Workouts",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    items(state.workoutsCompletedToday) { workoutName ->
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF1B2E1B))
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text("💪", style = MaterialTheme.typography.titleMedium)
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column {
+                                        Text(
+                                            workoutName,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = Color.White
+                                        )
+                                        Text(
+                                            "Completed today",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Color(0xFF66BB6A)
+                                        )
+                                    }
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .size(28.dp)
+                                        .clip(CircleShape)
+                                        .background(Color(0xFF66BB6A)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        Icons.Filled.Check,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
                 // Upcoming Reminders
                 item {
                     Row(

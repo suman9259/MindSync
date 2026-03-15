@@ -7,9 +7,11 @@ import com.example.mindsync.domain.model.Workout
 import com.example.mindsync.domain.model.WorkoutCategory
 import com.example.mindsync.domain.model.WorkoutReminder
 import com.example.mindsync.domain.model.WorkoutSession
+import com.example.mindsync.data.local.UserPreferences
 import com.example.mindsync.domain.usecase.workout.AddWorkoutReminderUseCase
 import com.example.mindsync.domain.usecase.workout.AddWorkoutSessionUseCase
 import com.example.mindsync.domain.usecase.workout.AddWorkoutUseCase
+import com.example.mindsync.domain.usecase.workout.DeleteWorkoutUseCase
 import com.example.mindsync.domain.usecase.workout.GetDefaultWorkoutsUseCase
 import com.example.mindsync.domain.usecase.workout.GetExercisesUseCase
 import com.example.mindsync.domain.usecase.workout.GetWorkoutProgressUseCase
@@ -30,10 +32,12 @@ class WorkoutViewModel(
     private val getDefaultWorkoutsUseCase: GetDefaultWorkoutsUseCase,
     private val getExercisesUseCase: GetExercisesUseCase,
     private val addWorkoutUseCase: AddWorkoutUseCase,
+    private val deleteWorkoutUseCase: DeleteWorkoutUseCase,
     private val addWorkoutSessionUseCase: AddWorkoutSessionUseCase,
     private val addWorkoutReminderUseCase: AddWorkoutReminderUseCase,
     private val getWorkoutProgressUseCase: GetWorkoutProgressUseCase,
-    private val getWorkoutStatsUseCase: GetWorkoutStatsUseCase
+    private val getWorkoutStatsUseCase: GetWorkoutStatsUseCase,
+    private val userPreferences: UserPreferences
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(WorkoutState())
@@ -68,6 +72,10 @@ class WorkoutViewModel(
             is WorkoutIntent.DeleteReminder -> deleteReminder(intent.id)
             is WorkoutIntent.Retry -> loadWorkouts()
             is WorkoutIntent.ClearError -> clearError()
+            is WorkoutIntent.AddSessionExercise -> addSessionExercise(intent.exercise)
+            is WorkoutIntent.UpdateSessionExercises -> _state.update { it.copy(sessionExercises = intent.exercises) }
+            is WorkoutIntent.ClearSession -> _state.update { it.copy(sessionExercises = emptyList()) }
+            is WorkoutIntent.MarkWorkoutComplete -> markWorkoutComplete(intent.workoutName, intent.session)
         }
     }
 
@@ -135,7 +143,7 @@ class WorkoutViewModel(
     private fun selectWorkout(workout: Workout) {
         _state.update { it.copy(selectedWorkout = workout) }
         viewModelScope.launch {
-            _effect.send(WorkoutEffect.NavigateToDetail(workout.id))
+            _effect.send(WorkoutEffect.NavigateToDetail(workout.id, workout))
         }
     }
 
@@ -180,7 +188,26 @@ class WorkoutViewModel(
 
     private fun deleteWorkout(id: String) {
         viewModelScope.launch {
-            _effect.send(WorkoutEffect.ShowSuccess("Workout deleted"))
+            deleteWorkoutUseCase(id)
+                .onSuccess {
+                    _effect.send(WorkoutEffect.ShowSuccess("Routine removed"))
+                    _effect.send(WorkoutEffect.NavigateBack)
+                }
+                .onFailure { e ->
+                    _effect.send(WorkoutEffect.ShowError(e.message ?: "Failed to remove routine"))
+                }
+        }
+    }
+
+    private fun addSessionExercise(exercise: LoggedExercise) {
+        _state.update { it.copy(sessionExercises = it.sessionExercises + exercise) }
+    }
+
+    private fun markWorkoutComplete(workoutName: String, session: WorkoutSession) {
+        viewModelScope.launch {
+            userPreferences.saveCompletedWorkout(workoutName)
+            val sessionWithUser = session.copy(userId = userId)
+            addWorkoutSessionUseCase(sessionWithUser)
         }
     }
 

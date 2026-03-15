@@ -38,6 +38,7 @@ class DashboardViewModel(
         loadDashboardData()
         observeUpcomingTasks()
         observeQuickNotes()
+        observeCompletedWorkouts()
     }
 
     fun processIntent(intent: DashboardIntent) {
@@ -50,6 +51,14 @@ class DashboardViewModel(
         }
     }
     
+    private fun observeCompletedWorkouts() {
+        viewModelScope.launch {
+            userPreferences.completedWorkoutsToday.collect { workouts ->
+                _state.update { it.copy(workoutsCompletedToday = workouts) }
+            }
+        }
+    }
+
     private fun observeQuickNotes() {
         viewModelScope.launch {
             userPreferences.quickNotes.collect { notes ->

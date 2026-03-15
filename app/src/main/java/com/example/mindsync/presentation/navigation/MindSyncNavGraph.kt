@@ -7,6 +7,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.example.mindsync.domain.model.Exercise
 import com.example.mindsync.domain.model.Meditation
 import com.example.mindsync.domain.model.MeditationCategory
@@ -28,9 +32,14 @@ import com.example.mindsync.presentation.settings.SettingsScreen
 import com.example.mindsync.presentation.splash.SplashScreen
 import com.example.mindsync.presentation.workout.AddExerciseScreen
 import com.example.mindsync.presentation.workout.AddWorkoutScreen
+import com.example.mindsync.presentation.workout.ExerciseSet
 import com.example.mindsync.presentation.workout.LogWorkoutScreen
+import com.example.mindsync.presentation.workout.LoggedExercise
 import com.example.mindsync.presentation.workout.WorkoutDetailScreen
+import com.example.mindsync.presentation.workout.WorkoutIntent
 import com.example.mindsync.presentation.workout.WorkoutScreen
+import com.example.mindsync.presentation.workout.WorkoutViewModel
+import org.koin.androidx.compose.koinViewModel
 import com.example.mindsync.presentation.medicine.MedicineScreen
 import com.example.mindsync.presentation.medicine.AddMedicineScreen
 import com.example.mindsync.presentation.medicine.MedicineDetailScreen
@@ -55,6 +64,8 @@ fun MindSyncNavGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
+    var pendingWorkoutForDetail by remember { mutableStateOf<Workout?>(null) }
+
     NavHost(
         navController = navController,
         startDestination = NavRoute.Splash.route,
@@ -270,8 +281,9 @@ fun MindSyncNavGraph(
                 onNavigateToProgress = {
                     navController.navigate(NavRoute.WorkoutProgress.route)
                 },
-                onNavigateToWorkoutDetail = { workoutId ->
-                    navController.navigate(NavRoute.WorkoutDetail.createRoute(workoutId))
+                onNavigateToWorkoutDetail = { workout ->
+                    pendingWorkoutForDetail = workout
+                    navController.navigate(NavRoute.WorkoutDetail.createRoute(workout.id))
                 },
                 onNavigateToLogWorkout = {
                     navController.navigate(NavRoute.LogWorkout.route)
@@ -290,9 +302,19 @@ fun MindSyncNavGraph(
         }
         
         composable(NavRoute.AddExercise.route) {
+            val workoutViewModel: WorkoutViewModel = koinViewModel()
             AddExerciseScreen(
                 onNavigateBack = { navController.popBackStack() },
                 onExerciseSelected = { exercise ->
+                    workoutViewModel.processIntent(
+                        WorkoutIntent.AddSessionExercise(
+                            LoggedExercise(
+                                name = exercise.name,
+                                muscleGroup = exercise.muscleGroup,
+                                sets = mutableListOf(ExerciseSet(1))
+                            )
+                        )
+                    )
                     navController.popBackStack()
                 },
                 onCreateExercise = { }
@@ -312,8 +334,7 @@ fun MindSyncNavGraph(
             )
         ) { backStackEntry ->
             val workoutId = backStackEntry.arguments?.getString("workoutId") ?: ""
-            // Get workout from default workouts list based on ID
-            val workout = getDefaultWorkoutById(workoutId)
+            val workout = pendingWorkoutForDetail ?: getDefaultWorkoutById(workoutId)
             WorkoutDetailScreen(
                 workout = workout,
                 onNavigateBack = { navController.popBackStack() },

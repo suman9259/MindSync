@@ -491,7 +491,8 @@ class WorkoutRepositoryImpl(
                     weightUnit = WeightUnit.valueOf(exerciseMap["weightUnit"] as? String ?: "KG"),
                     restSeconds = (exerciseMap["restSeconds"] as? Long)?.toInt() ?: 60,
                     imageUrl = exerciseMap["imageUrl"] as? String ?: "",
-                    notes = exerciseMap["notes"] as? String ?: ""
+                    notes = exerciseMap["notes"] as? String ?: "",
+                    isWithWeight = exerciseMap["isWithWeight"] as? Boolean ?: true
                 )
             } ?: emptyList()
 
@@ -598,7 +599,8 @@ class WorkoutRepositoryImpl(
         "weightUnit" to weightUnit.name,
         "restSeconds" to restSeconds,
         "imageUrl" to imageUrl,
-        "notes" to notes
+        "notes" to notes,
+        "isWithWeight" to isWithWeight
     )
 
     private fun WorkoutSession.toMap(): Map<String, Any?> = mapOf(

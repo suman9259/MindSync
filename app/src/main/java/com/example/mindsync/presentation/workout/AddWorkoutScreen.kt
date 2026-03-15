@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Switch
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -339,6 +340,7 @@ private fun ExerciseCard(
     var sets by remember { mutableStateOf(exercise.sets.toString()) }
     var reps by remember { mutableStateOf(exercise.reps.toString()) }
     var weight by remember { mutableStateOf(exercise.weight.toString()) }
+    var isWithWeight by remember { mutableStateOf(exercise.isWithWeight) }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -387,8 +389,28 @@ private fun ExerciseCard(
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Uses Weight",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Switch(
+                    checked = isWithWeight,
+                    onCheckedChange = {
+                        isWithWeight = it
+                        onUpdate(exercise.copy(isWithWeight = it))
+                    }
+                )
+            }
             
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -422,20 +444,22 @@ private fun ExerciseCard(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true
                 )
-                OutlinedTextField(
-                    value = weight,
-                    onValueChange = { 
-                        weight = it
-                        it.toFloatOrNull()?.let { w ->
-                            onUpdate(exercise.copy(weight = w))
-                        }
-                    },
-                    label = { Text("Weight (kg)") },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(8.dp),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    singleLine = true
-                )
+                if (isWithWeight) {
+                    OutlinedTextField(
+                        value = weight,
+                        onValueChange = { 
+                            weight = it
+                            it.toFloatOrNull()?.let { w ->
+                                onUpdate(exercise.copy(weight = w))
+                            }
+                        },
+                        label = { Text("Weight (kg)") },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        singleLine = true
+                    )
+                }
             }
         }
     }

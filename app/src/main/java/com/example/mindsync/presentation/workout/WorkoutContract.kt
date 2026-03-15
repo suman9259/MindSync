@@ -26,7 +26,8 @@ data class WorkoutState(
     val isLoading: Boolean = false,
     val isAddingWorkout: Boolean = false,
     val isAddingReminder: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val sessionExercises: List<LoggedExercise> = emptyList()
 ) : MviState
 
 sealed class WorkoutIntent : MviIntent {
@@ -45,12 +46,16 @@ sealed class WorkoutIntent : MviIntent {
     data class DeleteReminder(val id: String) : WorkoutIntent()
     data object Retry : WorkoutIntent()
     data object ClearError : WorkoutIntent()
+    data class AddSessionExercise(val exercise: LoggedExercise) : WorkoutIntent()
+    data class UpdateSessionExercises(val exercises: List<LoggedExercise>) : WorkoutIntent()
+    data object ClearSession : WorkoutIntent()
+    data class MarkWorkoutComplete(val workoutName: String, val session: WorkoutSession) : WorkoutIntent()
 }
 
 sealed class WorkoutEffect : MviEffect {
     data class ShowError(val message: String) : WorkoutEffect()
     data class ShowSuccess(val message: String) : WorkoutEffect()
     data object NavigateBack : WorkoutEffect()
-    data class NavigateToDetail(val workoutId: String) : WorkoutEffect()
+    data class NavigateToDetail(val workoutId: String, val workout: Workout) : WorkoutEffect()
     data object ReminderScheduled : WorkoutEffect()
 }

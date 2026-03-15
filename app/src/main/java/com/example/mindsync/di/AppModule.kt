@@ -18,6 +18,7 @@ import com.example.mindsync.domain.usecase.meditation.GetMeditationsUseCase
 import com.example.mindsync.domain.usecase.workout.AddWorkoutReminderUseCase
 import com.example.mindsync.domain.usecase.workout.AddWorkoutSessionUseCase
 import com.example.mindsync.domain.usecase.workout.AddWorkoutUseCase
+import com.example.mindsync.domain.usecase.workout.DeleteWorkoutUseCase
 import com.example.mindsync.domain.usecase.workout.GetDefaultWorkoutsUseCase
 import com.example.mindsync.domain.usecase.workout.GetExercisesUseCase
 import com.example.mindsync.domain.usecase.workout.GetWorkoutProgressUseCase
@@ -71,6 +72,7 @@ val appModule = module {
     factory { GetDefaultWorkoutsUseCase(get()) }
     factory { GetExercisesUseCase(get()) }
     factory { AddWorkoutUseCase(get()) }
+    factory { DeleteWorkoutUseCase(get()) }
     factory { AddWorkoutSessionUseCase(get()) }
     factory { AddWorkoutReminderUseCase(get()) }
     factory { GetWorkoutProgressUseCase(get()) }
@@ -81,7 +83,7 @@ val appModule = module {
     viewModel { AuthViewModel(get()) }
     viewModel { DashboardViewModel(get(), get(), get(), get(), get()) }
     viewModel { MeditationViewModel(get(), get(), get(), get()) }
-    viewModel { WorkoutViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { WorkoutViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { com.example.mindsync.presentation.medicine.MedicineViewModel(get()) }
     viewModel { com.example.mindsync.presentation.skincare.SkincareViewModel(get()) }
     viewModel { com.example.mindsync.presentation.insights.InsightsViewModel(get(), get(), get()) }
